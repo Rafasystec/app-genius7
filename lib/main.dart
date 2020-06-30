@@ -100,362 +100,372 @@ class _LogInPageState extends StateMVC <LogInPage> {
     ScreenUtil.instance =
     ScreenUtil(width: 750, height: 1304, allowFontScaling: true)
       ..init(context);
-    return Column(
-      children: <Widget>[
-        Container(
-          child: Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                      Controller.displayLogoTitle,
-                      style: CustomTextStyle.title(context)
-                  ),
-                  Text(
-                    Controller.displayLogoSubTitle,
-                    style: CustomTextStyle.subTitle(context),
-                  ),
-                ],
-              )),
-          width: ScreenUtil.getInstance().setWidth(750),
-          height: ScreenUtil.getInstance().setHeight(190),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(60),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(left: 25.0, right: 25.0),
-            child: IntrinsicWidth(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () =>
-                        setState(() => Controller.changeToSignIn()),
-                    borderSide: new BorderSide(
-                      style: BorderStyle.none,
+    return SingleChildScrollView(
+      child: Column (
+        children: <Widget>[
+          Container(
+            child: Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                        Controller.displayLogoTitle,
+                        style: CustomTextStyle.title(context)
                     ),
-                    child: new Text(Controller.displaySignInMenuButton,
-                        style: _signInActive
-                            ? TextStyle(
-                            fontSize: 22,
-                            color: Theme
-                                .of(context)
-                                .accentColor,
-                            fontWeight: FontWeight.bold)
-                            : TextStyle(
-                            fontSize: 16,
-                            color: Theme
-                                .of(context)
-                                .accentColor,
-                            fontWeight: FontWeight.normal)),
-                  ),
-                  OutlineButton(
-                    onPressed: () =>
-                        setState(() => Controller.changeToSignUp()),
-                    borderSide: BorderSide(
-                      style: BorderStyle.none,
+                    Text(
+                      Controller.displayLogoSubTitle,
+                      style: CustomTextStyle.subTitle(context),
                     ),
-                    child: Text(Controller.displaySignUpMenuButton,
-                        style: _signUpActive
-                            ? TextStyle(
-                            fontSize: 22,
-                            color: Theme
-                                .of(context)
-                                .accentColor,
-                            fontWeight: FontWeight.bold)
-                            : TextStyle(
-                            fontSize: 16,
-                            color: Theme
-                                .of(context)
-                                .accentColor,
-                            fontWeight: FontWeight.normal)),
-                  )
-                ],
+                  ],
+                )),
+            width: ScreenUtil.getInstance().setWidth(750),
+            height: ScreenUtil.getInstance().setHeight(190),
+          ),
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(60),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(left: 25.0, right: 25.0),
+              child: IntrinsicWidth(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    OutlineButton(
+                      onPressed: () =>
+                          setState(() => Controller.changeToSignIn()),
+                      borderSide: new BorderSide(
+                        style: BorderStyle.none,
+                      ),
+                      child: new Text(Controller.displaySignInMenuButton,
+                          style: _signInActive
+                              ? TextStyle(
+                              fontSize: 22,
+                              color: Theme
+                                  .of(context)
+                                  .accentColor,
+                              fontWeight: FontWeight.bold)
+                              : TextStyle(
+                              fontSize: 16,
+                              color: Theme
+                                  .of(context)
+                                  .accentColor,
+                              fontWeight: FontWeight.normal)),
+                    ),
+                    OutlineButton(
+                      onPressed: () =>
+                          setState(() => Controller.changeToSignUp()),
+                      borderSide: BorderSide(
+                        style: BorderStyle.none,
+                      ),
+                      child: Text(Controller.displaySignUpMenuButton,
+                          style: _signUpActive
+                              ? TextStyle(
+                              fontSize: 22,
+                              color: Theme
+                                  .of(context)
+                                  .accentColor,
+                              fontWeight: FontWeight.bold)
+                              : TextStyle(
+                              fontSize: 16,
+                              color: Theme
+                                  .of(context)
+                                  .accentColor,
+                              fontWeight: FontWeight.normal)),
+                    )
+                  ],
+                ),
               ),
             ),
+            width: ScreenUtil.getInstance().setWidth(750),
+            height: ScreenUtil.getInstance().setHeight(170),
           ),
-          width: ScreenUtil.getInstance().setWidth(750),
-          height: ScreenUtil.getInstance().setHeight(170),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(10),
-        ),
-        Container(
-          child: Padding(
-              padding: EdgeInsets.only(left: 30.0, right: 30.0),
-              child: _signInActive ? _showSignIn(context) : _showSignUp()),
-          width: ScreenUtil.getInstance().setWidth(750),
-          height: ScreenUtil.getInstance().setHeight(778),
-        ),
-      ],
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(10),
+          ),
+          SingleChildScrollView(
+            child: Container (
+              child: Padding(
+                  padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                  child: _signInActive ? _showSignIn(context) : _showSignUp()),
+              width: ScreenUtil.getInstance().setWidth(750),
+              height: ScreenUtil.getInstance().setHeight(778),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _showSignIn(context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(30),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: TextField(
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .accentColor),
-              controller: _emailController,
-              decoration: InputDecoration(
-                hintText: Controller.displayHintTextEmail,
-                hintStyle: CustomTextStyle.formField(context),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                prefixIcon: const Icon(
-                  Icons.email,
-                  color: Colors.white,
-                ),
-              ),
-              obscureText: false,
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(30),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(50),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: TextField(
-              obscureText: true,
-              style: TextStyle(color: Theme
-                  .of(context)
-                  .accentColor),
-              controller: _passwordController,
-              decoration: InputDecoration(
-                //Add th Hint text here.
-                hintText: Controller.displayHintTextPassword,
-                hintStyle: CustomTextStyle.formField(context),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                prefixIcon: const Icon(
-                  Icons.lock,
-                  color: Colors.white,
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: TextField(
+                textInputAction: TextInputAction.next,
+
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: Controller.displayHintTextEmail,
+                  hintStyle: CustomTextStyle.formField(context),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  prefixIcon: const Icon(
+                    Icons.email,
+                    color: Colors.white,
+                  ),
                 ),
+                obscureText: false,
               ),
             ),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(80),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: RaisedButton(
-              child: Row(
-                children: <Widget>[
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(50),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: TextField(
+                obscureText: true,
+                style: TextStyle(color: Theme
+                    .of(context)
+                    .accentColor),
+                controller: _passwordController,
+                decoration: InputDecoration(
+                  //Add th Hint text here.
+                  hintText: Controller.displayHintTextPassword,
+                  hintStyle: CustomTextStyle.formField(context),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  prefixIcon: const Icon(
+                    Icons.lock,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(80),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: RaisedButton(
+                child: Row(
+                  children: <Widget>[
 //                  SocialIcon(iconData: CustomIcons.email),
-                  Expanded(
-                    child: Text(
-                      Controller.displaySignInEmailButton,
-                      textAlign: TextAlign.center,
-                      style: CustomTextStyle.button(context),
-                    ),
-                  )
+                    Expanded(
+                      child: Text(
+                        Controller.displaySignInEmailButton,
+                        textAlign: TextAlign.center,
+                        style: CustomTextStyle.button(context),
+                      ),
+                    )
+                  ],
+                ),
+                color: Colors.blueGrey,
+                onPressed: () =>
+                    Controller.tryToLogInUserViaEmail(
+                        context, _emailController, _passwordController),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(30),
+          ),
+          Container(
+            child:Visibility(
+              visible: true,
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  horizontalLine(),
+                  Text(Controller.displaySeparatorText,
+                      style: CustomTextStyle.body(context)),
+                  horizontalLine()
                 ],
               ),
-              color: Colors.blueGrey,
-              onPressed: () =>
-                  Controller.tryToLogInUserViaEmail(
-                      context, _emailController, _passwordController),
-            ),
+            )),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(30),
-        ),
-        Container(
-          child:Visibility(
-            visible: true,
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                horizontalLine(),
-                Text(Controller.displaySeparatorText,
-                    style: CustomTextStyle.body(context)),
-                horizontalLine()
-              ],
-            ),
-          )),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(30),
-        ),
-        Container(
-          child: Visibility(
-            visible: true,
-            child: Padding(
-                padding: EdgeInsets.only(),
-                child: RaisedButton(
-                  child: Row(
-                    children: <Widget>[
-                      SocialIcon(iconData: CustomIcons.facebook),
-                      Expanded(
-                        child: Text(
-                          Controller.displaySignInFacebookButton,
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyle.button(context),
-                        ),
-                      )
-                    ],
-                  ),
-                  color: Color(0xFF3C5A99),
-                  onPressed: () => Controller.tryToLogInUserViaFacebook(context),
-                )),
-        )
-        ),
-      ],
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(30),
+          ),
+          Container(
+            child: Visibility(
+              visible: true,
+              child: Padding(
+                  padding: EdgeInsets.only(),
+                  child: RaisedButton(
+                    child: Row(
+                      children: <Widget>[
+                        SocialIcon(iconData: CustomIcons.facebook),
+                        Expanded(
+                          child: Text(
+                            Controller.displaySignInFacebookButton,
+                            textAlign: TextAlign.center,
+                            style: CustomTextStyle.button(context),
+                          ),
+                        )
+                      ],
+                    ),
+                    color: Color(0xFF3C5A99),
+                    onPressed: () => Controller.tryToLogInUserViaFacebook(context),
+                  )),
+          )
+          ),
+        ],
+      ),
     );
   }
 
   Widget _showSignUp() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(30),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: TextField(
-              obscureText: false,
-              style: CustomTextStyle.formField(context),
-              controller: _newEmailController,
-              decoration: InputDecoration(
-                //Add th Hint text here.
-                hintText: Controller.displayHintTextNewEmail,
-                hintStyle: CustomTextStyle.formField(context),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                prefixIcon: const Icon(
-                  Icons.email,
-                  color: Colors.white,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(30),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: TextField(
+                obscureText: false,
+                style: CustomTextStyle.formField(context),
+                controller: _newEmailController,
+                decoration: InputDecoration(
+                  //Add th Hint text here.
+                  hintText: Controller.displayHintTextNewEmail,
+                  hintStyle: CustomTextStyle.formField(context),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  prefixIcon: const Icon(
+                    Icons.email,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(50),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: TextField(
-              obscureText: true,
-              style: CustomTextStyle.formField(context),
-              controller: _newPasswordController,
-              decoration: InputDecoration(
-                //Add the Hint text here.
-                hintText: Controller.displayHintTextNewPassword,
-                hintStyle: CustomTextStyle.formField(context),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                prefixIcon: const Icon(
-                  Icons.lock,
-                  color: Colors.white,
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(50),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: TextField(
+                obscureText: true,
+                style: CustomTextStyle.formField(context),
+                controller: _newPasswordController,
+                decoration: InputDecoration(
+                  //Add the Hint text here.
+                  hintText: Controller.displayHintTextNewPassword,
+                  hintStyle: CustomTextStyle.formField(context),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  prefixIcon: const Icon(
+                    Icons.lock,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: TextField(
+                obscureText: true,
+                style: CustomTextStyle.formField(context),
+                controller: _newPasswordConfController,
+                decoration: InputDecoration(
+                  //Add the Hint text here.
+                  hintText: Controller.displayHintTextConfNewPassword,
+                  hintStyle: CustomTextStyle.formField(context),
+                  enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme
+                              .of(context)
+                              .accentColor, width: 1.0)),
+                  prefixIcon: const Icon(
+                    Icons.lock,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
           ),
-        ),Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: TextField(
-              obscureText: true,
-              style: CustomTextStyle.formField(context),
-              controller: _newPasswordConfController,
-              decoration: InputDecoration(
-                //Add the Hint text here.
-                hintText: Controller.displayHintTextConfNewPassword,
-                hintStyle: CustomTextStyle.formField(context),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Theme
-                            .of(context)
-                            .accentColor, width: 1.0)),
-                prefixIcon: const Icon(
-                  Icons.lock,
-                  color: Colors.white,
+          SizedBox(
+            height: ScreenUtil.getInstance().setHeight(80),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.only(),
+              child: RaisedButton(
+                child: Text(
+                  Controller.displaySignUpMenuButton,
+                  style: CustomTextStyle.button(context),
                 ),
+                color: Colors.blueGrey,
+                onPressed: () =>
+                    Controller.signUpWithEmailAndPassword(
+                        _newEmailController, _newPasswordController,_newPasswordConfController),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          height: ScreenUtil.getInstance().setHeight(80),
-        ),
-        Container(
-          child: Padding(
-            padding: EdgeInsets.only(),
-            child: RaisedButton(
-              child: Text(
-                Controller.displaySignUpMenuButton,
-                style: CustomTextStyle.button(context),
-              ),
-              color: Colors.blueGrey,
-              onPressed: () =>
-                  Controller.signUpWithEmailAndPassword(
-                      _newEmailController, _newPasswordController,_newPasswordConfController),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
