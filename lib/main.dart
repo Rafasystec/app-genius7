@@ -2,6 +2,8 @@
 import 'dart:convert';
 
 import 'package:app/Objects/ResponseAuthentication.dart';
+import 'package:app/util/AlertOK.dart';
+import 'package:app/util/HttpHeader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +17,9 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'Widgets/SocialIcons.dart';
 //For http request
 import 'package:http/http.dart' as http;
+//import the flutter_localizations library and specify localizationsDelegates and supportedLocales for MaterialApp:
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 //import 'package:flutter_screenutil/flutter_screenutil.dart';
 //import 'package:momentum/CustomIcons.dart';
 //import 'package:momentum/Screens/Profile.dart';
@@ -28,6 +33,7 @@ TextEditingController _emailController = TextEditingController();
 TextEditingController _passwordController = TextEditingController();
 TextEditingController _newEmailController = TextEditingController();
 TextEditingController _newPasswordController = TextEditingController();
+TextEditingController _newPasswordConfController = TextEditingController();
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 void main() {
@@ -39,6 +45,17 @@ class MyApp extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return MaterialApp(
+        localizationsDelegates: [
+          // ... app-specific localization delegate[s] here
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('pt'),
+          const Locale('en'),
+          const Locale.fromSubtags(languageCode: 'zh'),
+        ],
         theme: _buildDarkTheme(),
         home: Scaffold(
           resizeToAvoidBottomPadding: true,
@@ -391,6 +408,34 @@ class _LogInPageState extends StateMVC <LogInPage> {
               ),
             ),
           ),
+        ),Container(
+          child: Padding(
+            padding: EdgeInsets.only(),
+            child: TextField(
+              obscureText: true,
+              style: CustomTextStyle.formField(context),
+              controller: _newPasswordConfController,
+              decoration: InputDecoration(
+                //Add the Hint text here.
+                hintText: Controller.displayHintTextConfNewPassword,
+                hintStyle: CustomTextStyle.formField(context),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme
+                            .of(context)
+                            .accentColor, width: 1.0)),
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme
+                            .of(context)
+                            .accentColor, width: 1.0)),
+                prefixIcon: const Icon(
+                  Icons.lock,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
         ),
         SizedBox(
           height: ScreenUtil.getInstance().setHeight(80),
@@ -406,7 +451,7 @@ class _LogInPageState extends StateMVC <LogInPage> {
               color: Colors.blueGrey,
               onPressed: () =>
                   Controller.signUpWithEmailAndPassword(
-                      _newEmailController, _newPasswordController),
+                      _newEmailController, _newPasswordController,_newPasswordConfController),
             ),
           ),
         ),
@@ -466,6 +511,7 @@ class Controller extends ControllerMVC {
   static String get displayHintTextNewEmail => Model._hintTextNewEmail;
 
   static String get displayHintTextNewPassword => Model._hintTextNewPassword;
+  static String get displayHintTextConfNewPassword => Model._hintTextNewPasswordConf;
 
   static String get displaySignUpButtonTest => Model._signUpButtonText;
 
@@ -490,8 +536,8 @@ class Controller extends ControllerMVC {
   static Future<bool> signInWithEmail(context, email, password) =>
       Model._signInWithEmail(context, email, password);
 
-  static void signUpWithEmailAndPassword(email, password) =>
-      Model._signUpWithEmailAndPassword(email, password);
+  static void signUpWithEmailAndPassword(email, password, confpwd) =>
+      Model._signUpWithEmailAndPassword(email, password, confpwd);
 
   static Future navigateToProfile(context) => Model._navigateToProfile(context);
 
@@ -504,6 +550,14 @@ class Controller extends ControllerMVC {
   static Future tryToLogInUserViaEmail(context, email, password) async {
     if (await signInWithEmail(context, email, password) == true) {
       navigateToProfile(context);
+    }else{
+      //Show Alert
+//      AlertOK('title', 'Não foi possível fazer o login');
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(),
+          barrierDismissible: false,
+      );
     }
   }
 
@@ -513,6 +567,33 @@ class Controller extends ControllerMVC {
     } else {
       //TODO Display error message and stay put.
     }
+  }
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('AlertDialog Title'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('This is a demo alert dialog.'),
+                Text('Would you like to approve of this message?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Approve'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -525,6 +606,7 @@ class Model {
   static String _hintTextPassword = "Password";
   static String _hintTextNewEmail = "Enter your Email";
   static String _hintTextNewPassword = "Enter a Password";
+  static String _hintTextNewPasswordConf = "Confirm Password";
   static String _signUpButtonText = "SIGN UP";
   static String _signInWithEmailButtonText = "Entrar";
   static String _signInWithFacebookButtonText = "Sign in with Facebook";
@@ -570,14 +652,11 @@ class Model {
   static Future<bool> _signInWithEmail(context, TextEditingController email,
       TextEditingController password) async {
     try {
-//      AuthResult result = await FirebaseAuth.instance
-//          .signInWithEmailAndPassword(
-//          email: email.text.trim().toLowerCase(), password: password.text);
-//      print('Signed in: ${result.user.uid}');
-    ResponseAuthentication result = await doLogin(email.text.trim().toLowerCase(),password.text);
-    print('Signed in as ${result.userName}');
-    print('User id : ${result.userId}');
-    print('Use this token: ${result.token}');
+      //Comment this for a while
+      ResponseAuthentication result = await doLogin(email.text.trim().toLowerCase(),password.text);
+      print('Signed in as ${result.userName}');
+      print('User id : ${result.userId}');
+      print('Use this token: ${result.token}');
       return true;
     } catch (e) {
       print('Error: $e');
@@ -608,13 +687,26 @@ class Model {
 
 
   static Future<bool> _signUpWithEmailAndPassword(TextEditingController email,
-      TextEditingController password) async {
+      TextEditingController password, TextEditingController confpwd) async {
     try {
-//      AuthResult result = await FirebaseAuth.instance
-//          .createUserWithEmailAndPassword(
-//          email: email.text.trim().toLowerCase(), password: password.text);
-//      print('Signed up: ${result.user.uid}');
+      final http.Response response = await http.post(
+        'http://192.168.100.19:8080/user',
+        headers: HttpHeader().getHeader(),
+        body: jsonEncode(<String, Object>{
+          'id':0,
+          'email': email.text.trim(),
+          'pwd':password.text.trim(),
+          'type':'CLI'
+        }),
+      );
       print('Signed up:');
+      if(response.statusCode == 201 || response.statusCode == 200){
+        return true;
+      }else{
+        // If the server did not return a 201 CREATED response,
+        // then throw an exception.
+        throw Exception('Failed to load ResponseAuthentication');
+      }
       return true;
     } catch (e) {
       print('Error: $e');

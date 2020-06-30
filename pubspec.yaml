@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   mvc_pattern: ^3.4.3
   flutter_screenutil: ^0.5.3
   flutter_facebook_login:
