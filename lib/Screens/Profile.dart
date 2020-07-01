@@ -1,5 +1,6 @@
 import 'package:app/Objects/Location.dart';
 import 'package:app/Objects/user.dart';
+import 'package:app/Screens/list_pro.dart';
 import 'package:app/response/ResponseAreaPro.dart';
 import 'package:flutter/material.dart';
 //import 'package:momentum/Objects/user.dart';
@@ -34,76 +35,38 @@ class Profile extends StatelessWidget {
     );
   }
 
-
-
-  /** _displayUserData(profileData) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          height: 200.0,
-          width: 200.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-               image: NetworkImage(
-                profileData['picture']['data']['url'],
-              ),
-              
-            ),
-          ),
-        ),
-        SizedBox(height: 28.0),
-        Text(
-          "Logged in as: ${profileData['name']}",
-          style: TextStyle(
-            fontSize: 20.0,
-          ),
-        ),
-      ],
-    );
-}*/
-
 }
 
 class InitialList extends StatelessWidget{
   List<ResponseAreaPro> list = [
-    ResponseAreaPro('Encanador','200 profissionais'),
-    ResponseAreaPro('Eletricista','458 profissionais'),
-    ResponseAreaPro('Manicure','986 profissionais'),];
+    ResponseAreaPro('Encanador','200 profissionais','iconURL',1),
+    ResponseAreaPro('Eletricista','458 profissionais','iconURL',2),
+    ResponseAreaPro('Manicure','986 profissionais','iconURL',3),];
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(
         itemCount: list == null ? 0 : list.length,
         itemBuilder: (BuildContext context, int index){
           var item = list[index];
-          return InitialListItem(item.title,item.description);
+          return InitialListItem(item);
         });
-//    return Column(
-//      children: <Widget>[
-//        InitialListItem(),
-//        InitialListItem()
-//      ],
-//    );
   }
 }
 
 class InitialListItem extends StatelessWidget{
-  final String title;
-  final String subtitle;
-  InitialListItem(this.title,this.subtitle);
+  final ResponseAreaPro _responseAreaPro;
+  InitialListItem(this._responseAreaPro);
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         onTap: (){
-          _showMyDialog(context,title,subtitle);
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListPro(_responseAreaPro.idArea)));
         },
-        leading: Icon(Icons.monetization_on),
-        title: Text(title),
-        subtitle: Text(subtitle),
+        leading: Image.network(_responseAreaPro.iconURL),
+        title: Text(_responseAreaPro.title),
+        subtitle: Text(_responseAreaPro.description),
       ),
     );
   }
