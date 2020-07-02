@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:app/Objects/ResponseAuthentication.dart';
 import 'package:app/util/AlertOK.dart';
 import 'package:app/util/HttpHeader.dart';
+import 'package:app/webservice/authentication_ws.dart';
+import 'package:app/webservice/user_ws.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +40,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 void main() {
   runApp(new MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
@@ -546,8 +549,8 @@ class Controller extends ControllerMVC {
   static Future<bool> signInWithEmail(context, email, password) =>
       Model._signInWithEmail(context, email, password);
 
-  static void signUpWithEmailAndPassword(email, password, confpwd) =>
-      Model._signUpWithEmailAndPassword(email, password, confpwd);
+  static void signUpWithEmailAndPassword(TextEditingController email, TextEditingController password, TextEditingController confpwd) =>
+      signUpOnServerWithEmailAndPassword(email.text.toLowerCase(), password.text, confpwd.text);
 
   static Future navigateToProfile(context) => Model._navigateToProfile(context);
 
@@ -674,55 +677,6 @@ class Model {
     }
   }
 
-
-  static Future<ResponseAuthentication> doLogin(String email, String pwd) async {
-    final http.Response response = await http.post(
-      'http://192.168.100.19:8080/auth',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'email': email,
-        'pwd':pwd
-      }),
-    );
-    if(response.statusCode == 201 || response.statusCode == 200){
-      return ResponseAuthentication.fromJson(json.decode(response.body));
-    }else{
-      // If the server did not return a 201 CREATED response,
-      // then throw an exception.
-      throw Exception('Failed to load ResponseAuthentication');
-    }
-  }
-
-
-  static Future<bool> _signUpWithEmailAndPassword(TextEditingController email,
-      TextEditingController password, TextEditingController confpwd) async {
-    try {
-      final http.Response response = await http.post(
-        'http://192.168.100.19:8080/user',
-        headers: HttpHeader().getHeader(),
-        body: jsonEncode(<String, Object>{
-          'id':0,
-          'email': email.text.trim(),
-          'pwd':password.text.trim(),
-          'type':'CLI'
-        }),
-      );
-      print('Signed up:');
-      if(response.statusCode == 201 || response.statusCode == 200){
-        return true;
-      }else{
-        // If the server did not return a 201 CREATED response,
-        // then throw an exception.
-        throw Exception('Failed to load ResponseAuthentication');
-      }
-      return true;
-    } catch (e) {
-      print('Error: $e');
-      return false;
-    }
-  }
 
   static Future _navigateToProfile(context) async {
     await Navigator.push(

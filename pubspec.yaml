@@ -38,6 +38,7 @@ dependencies:
   http: ^0.12.1
   flutter_form_builder: ^3.11.3
   dart_json_mapper: ^1.5.16
+  http_interceptor:
 
 
 dev_dependencies:
