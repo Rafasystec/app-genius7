@@ -1,7 +1,13 @@
 import 'package:app/Objects/Location.dart';
 import 'package:app/Objects/user.dart';
 import 'package:app/Screens/list_pro.dart';
+
+import 'package:app/components/centered_message.dart';
+import 'package:app/components/progress_bar.dart';
 import 'package:app/response/ResponseAreaPro.dart';
+import 'package:app/response/response_pro_area.dart';
+import 'package:app/util/AlertOK.dart';
+import 'package:app/webservice/pro_area.dart';
 import 'package:flutter/material.dart';
 //import 'package:momentum/Objects/user.dart';
 
@@ -25,12 +31,31 @@ class Profile extends StatelessWidget {
             ),
           ],
         ),
-        body: Container(
-          child: Center(
-              child: InitialList()
-              //child: _displayUserData(user.profileData),
-            ),
-        ),
+        body: FutureBuilder<List<ResponseProArea>>(
+          future: Future.delayed(Duration(seconds: 1)).then((value) => getAllProAreas()) ,
+          builder: (context , snapshot){
+            switch(snapshot.connectionState){
+              case ConnectionState.none:
+                break;
+              case ConnectionState.waiting:
+                return ProgressBar();
+                break;
+              case ConnectionState.active:
+                break;
+              case ConnectionState.done:
+                if(snapshot.hasData) {
+                  final List<ResponseProArea> areas = snapshot.data;
+                  if (areas.isNotEmpty) {
+                    return InitialList(areas);
+                  }
+                }else if(snapshot.hasError){
+                  return CenteredMessage('Sorry! We got an error',icon: Icons.error,);
+                }
+                break;
+            }
+            return CenteredMessage('No entry found!',icon: Icons.warning,);
+
+          },),
       ),
     );
   }
@@ -38,10 +63,8 @@ class Profile extends StatelessWidget {
 }
 
 class InitialList extends StatelessWidget{
-  List<ResponseAreaPro> list = [
-    ResponseAreaPro('Encanador','200 profissionais','iconURL',1),
-    ResponseAreaPro('Eletricista','458 profissionais','iconURL',2),
-    ResponseAreaPro('Manicure','986 profissionais','iconURL',3),];
+  final List<ResponseProArea> list;
+  InitialList(this.list);
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(
@@ -54,7 +77,7 @@ class InitialList extends StatelessWidget{
 }
 
 class InitialListItem extends StatelessWidget{
-  final ResponseAreaPro _responseAreaPro;
+  final ResponseProArea _responseAreaPro;
   InitialListItem(this._responseAreaPro);
 
   @override
@@ -62,11 +85,17 @@ class InitialListItem extends StatelessWidget{
     return Card(
       child: ListTile(
         onTap: (){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListPro(_responseAreaPro.idArea)));
+
+          if(_responseAreaPro.count > 0) {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ListPro(_responseAreaPro.id)));
+          }else{
+            _showMyDialog(context, 'Advice', 'There is no professionals for this Area');
+          }
         },
-        leading: Image.network(_responseAreaPro.iconURL),
-        title: Text(_responseAreaPro.title),
-        subtitle: Text(_responseAreaPro.description),
+        leading: Image.network(_responseAreaPro.urlBunner!=null?_responseAreaPro.urlBunner:""),
+        title: Text(_responseAreaPro.description),
+        subtitle: Text('${_responseAreaPro.count} profissionais'),
       ),
     );
   }

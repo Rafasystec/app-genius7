@@ -2,6 +2,7 @@
 
 import 'dart:collection';
 
+import 'package:app/util/preferences.dart';
 import 'package:http_interceptor/http_client_with_interceptor.dart';
 import 'logging_interceptor.dart';
 
@@ -16,9 +17,10 @@ Map<String, String> getHeader(){
   };
 }
 
-Map<String, String> getHeaderWithAuthentication(){
+Map<String, String> getHeaderWithAuthentication(String token){
   return HashMap.from(<String, String>{
     'Content-Type': 'application/json; charset=UTF-8',
+    'Authorization': 'Bearer $token'
   });
 
 }

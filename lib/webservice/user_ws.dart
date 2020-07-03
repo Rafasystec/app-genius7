@@ -16,27 +16,27 @@ Future<bool> signUpOnServerWithEmailAndPassword(String email,
     String password, String confpwd) async {
   try {
     final Response response = await client().post(
-    'http://192.168.100.19:8080/user',
+    '$ROOT_URL/user',
     headers: getHeader(),
     body: jsonEncode(<String, Object>{
-      'id':0,
-      'email': email,
-      'pwd':password,
-      'type':'CLI'
-      }),
-    );
+        'id':0,
+        'email': email,
+        'pwd':password,
+        'type':'CLI'
+        }),
+    ).timeout(Duration(seconds: 3));
     print('Signed up:');
     if(response.statusCode == 201 || response.statusCode == 200){
-      return true;
+        return true;
     }else{
-      // If the server did not return a 201 CREATED response,
-      // then throw an exception.
-      throw Exception('Failed to load ResponseAuthentication');
+        // If the server did not return a 201 CREATED response,
+        // then throw an exception.
+        throw Exception('Failed to load ResponseAuthentication');
     }
       return true;
     } catch (e) {
-      print('Error: $e');
-      return false;
-  }
+        print('Error: $e');
+        return false;
+    }
 }
 

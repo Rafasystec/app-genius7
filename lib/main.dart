@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:app/Objects/ResponseAuthentication.dart';
 import 'package:app/util/AlertOK.dart';
 import 'package:app/util/HttpHeader.dart';
+import 'package:app/util/preferences.dart';
 import 'package:app/webservice/authentication_ws.dart';
 import 'package:app/webservice/user_ws.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -670,6 +671,7 @@ class Model {
       print('Signed in as ${result.userName}');
       print('User id : ${result.userId}');
       print('Use this token: ${result.token}');
+      setAppToken(result.token);
       return true;
     } catch (e) {
       print('Error: $e');
