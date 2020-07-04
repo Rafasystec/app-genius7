@@ -1,22 +1,21 @@
-import 'package:app/Objects/Location.dart';
-import 'package:app/Objects/user.dart';
-import 'package:app/Screens/Profile.dart';
-import 'package:app/Screens/list_pro.dart';
 
+import 'package:app/Screens/Profile.dart';
 import 'package:app/components/centered_message.dart';
 import 'package:app/components/progress_bar.dart';
-import 'package:app/response/ResponseAreaPro.dart';
 import 'package:app/response/response_group_list.dart';
-import 'package:app/response/response_pro_area.dart';
-import 'package:app/util/AlertOK.dart';
-import 'package:app/webservice/pro_area.dart';
 import 'package:flutter/material.dart';
-//import 'package:momentum/Objects/user.dart';
 
 class ScreenGroupAreas extends StatelessWidget {
 
   Future<List<ResponseGroupList>> _is() async{
-
+    List<ResponseGroupList> list = new List();
+    list.add(ResponseGroupList(1,'https://images.wisegeek.com/office-space-with-computers.jpg','OVENARIA'));
+    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','ESTETICA'));
+    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','CUIDADOS DO LAR'));
+    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','MARCENARIA'));
+    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','AUTO-PEÇAS'));
+    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','OFICINAS'));
+    return list;
   }
 
   @override
@@ -81,30 +80,42 @@ class InitialList extends StatelessWidget{
 }
 
 class InitialListItem extends StatelessWidget{
-  final ResponseGroupList _responseAreaPro;
-  InitialListItem(this._responseAreaPro);
+  final ResponseGroupList _groupList;
+  InitialListItem(this._groupList);
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        width: 400.0,
-        height: 150.0,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          color: Colors.redAccent,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: Image.network(
-            _responseAreaPro.bunner != null ? _responseAreaPro.bunner : "",
-            height: 150.0,
-            width: 100.0,
-            fit: BoxFit.fill,
+    return Stack(
+      children: <Widget>[
+        GestureDetector(
+          onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Profile()));
+          },
+          child: Card(
+            child: Container(
+              width: 400.0,
+              height: 150.0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                color: Colors.redAccent,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  _groupList.bunner != null ? _groupList.bunner : "",
+                  height: 150.0,
+                  width: 100.0,
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
           ),
         ),
-      ),
+        Text(_groupList.description,style: TextStyle(fontSize: 26.0,color: Colors.black,fontStyle: FontStyle.normal),)
+      ],
     );
+
   }
 
   Future<void> _showMyDialog(BuildContext context, String title, String body) async {

@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:app/Objects/ResponseAuthentication.dart';
+import 'package:app/Screens/group_area_list.dart';
 import 'package:app/util/AlertOK.dart';
 import 'package:app/util/HttpHeader.dart';
 import 'package:app/util/preferences.dart';
@@ -682,7 +683,7 @@ class Model {
 
   static Future _navigateToProfile(context) async {
     await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Profile()));
+        context, MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
   }
 }
 
