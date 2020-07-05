@@ -1,3 +1,4 @@
+import 'package:app/Screens/screen_pro_agenda.dart';
 import 'package:app/components/pro_rating.dart';
 import 'package:app/components/prod_detail.dart';
 import 'package:app/response/response_pro.dart';
@@ -51,7 +52,9 @@ class ScreenProDetailAgenda extends StatelessWidget{
                     IconButton(
                       icon: Icon(Icons.chat,color: Colors.white,),
                       tooltip: 'Faça uma pergunta',
-                      onPressed: null,
+                      onPressed: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenAgendaPro(title: 'Agenda',)));
+                      },
                     ),
                     Text('Faça uma pergunta',style: TextStyle(color: Colors.white,fontSize: 24.0),)
                   ],
