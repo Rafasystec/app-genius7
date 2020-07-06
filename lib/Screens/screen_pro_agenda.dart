@@ -1,3 +1,6 @@
+
+
+//import 'package:app/components/event.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart'
@@ -55,6 +58,7 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
   DateTime _currentDate2 = DateTime(2020, 7, 6);
   String _currentMonth = DateFormat.yMMM().format(DateTime(2020, 7, 3));
   DateTime _targetDateTime = DateTime(2020, 7, 6);
+  List<Event> _events = new List();
 //  List<DateTime> _markedDate = [DateTime(2018, 9, 20), DateTime(2018, 10, 11)];
   static Widget _eventIcon = new Container(
 //    decoration: new BoxDecoration(
@@ -69,36 +73,74 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
 
   EventList<Event> _markedDateMap = new EventList<Event>(
     events: {
+      new DateTime(2020, 7, 6): [
+      new Event(
+        date: new DateTime(2020, 7, 6,10,0,0),
+        title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 6,10,0,0)),
+        icon: _eventIcon,
+      ),
+      ],
       new DateTime(2020, 7, 10): [
         new Event(
-          date: new DateTime(2020, 7, 10),
-          title: 'Event 1',
-          icon: _eventIcon,
-//          dot: Container(
-//            margin: EdgeInsets.symmetric(horizontal: 1.0),
-//            color: Colors.blue,
-//            height: 5.0,
-//            width: 5.0,
-//          ),
-        ),
-        new Event(
-          date: new DateTime(2020, 7, 10),
-          title: 'Event 2',
+          date: new DateTime(2020, 7, 10,10,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,10,0,0)),
           icon: _eventIcon,
         ),
         new Event(
-          date: new DateTime(2020, 7, 10),
-          title: 'Event 3',
+          date: new DateTime(2020, 7, 10,11,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,11,0,0)),
+          icon: _eventIcon,
+        ),
+        new Event(
+          date: new DateTime(2020, 7, 10,13,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,13,0,0)),
           icon: _eventIcon,
         ),
       ],
       new DateTime(2020,7,11):[
         new Event(
-          date: new DateTime(2020, 7, 11),
-          title: 'Event day 11',
+          date: new DateTime(2020, 7, 11,9,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 11,9,0,0)),
           icon: _eventIcon,
         ),
-      ]
+      ],
+      new DateTime(2020, 7, 13): [
+        new Event(
+          date: new DateTime(2020, 7, 13,10,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,10,0,0)),
+          icon: _eventIcon,
+        ),
+        new Event(
+          date: new DateTime(2020, 7, 13,11,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,11,0,0)),
+          icon: _eventIcon,
+        ),
+        new Event(
+          date: new DateTime(2020, 7, 13,13,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,13,0,0)),
+          icon: _eventIcon,
+        ),new Event(
+          date: new DateTime(2020, 7, 13,14,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,14,0,0)),
+          icon: _eventIcon,
+        ),new Event(
+          date: new DateTime(2020, 7, 13,15,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,15,0,0)),
+          icon: _eventIcon,
+        ),new Event(
+          date: new DateTime(2020, 7, 13,16,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,16,0,0)),
+          icon: _eventIcon,
+        ),new Event(
+          date: new DateTime(2020, 7, 13,17,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,17,0,0)),
+          icon: _eventIcon,
+        ),new Event(
+          date: new DateTime(2020, 7, 13,18,0,0),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,18,0,0)),
+          icon: _eventIcon,
+        ),
+      ],
     },
   );
 
@@ -140,58 +182,22 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
 //        icon: _eventIcon,
 //      ),
 //    ]);
+  print('Event size ${_events.length}');
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    /// Example with custom icon
-//    _calendarCarousel = CalendarCarousel<Event>(
-//      onDayPressed: (DateTime date, List<Event> events) {
-//        this.setState(() => _currentDate = date);
-//        events.forEach((event) => print(event.title));
-//      },
-//      weekendTextStyle: TextStyle(
-//        color: Colors.red,
-//      ),
-//      thisMonthDayBorderColor: Colors.grey,
-////          weekDays: null, /// for pass null when you do not want to render weekDays
-//      headerText: 'Custom Header',
-//      weekFormat: true,
-//      markedDatesMap: _markedDateMap,
-//      height: 200.0,
-//      selectedDateTime: _currentDate2,
-//      showIconBehindDayText: true,
-////          daysHaveCircularBorder: false, /// null for not rendering any border, true for circular border, false for rectangular border
-//      customGridViewPhysics: NeverScrollableScrollPhysics(),
-//      markedDateShowIcon: true,
-//      markedDateIconMaxShown: 2,
-//      selectedDayTextStyle: TextStyle(
-//        color: Colors.yellow,
-//      ),
-//      todayTextStyle: TextStyle(
-//        color: Colors.blue,
-//      ),
-////      markedDateIconBuilder: (event) {
-////        return event.icon;
-////      },
-//      minSelectedDate: _currentDate.subtract(Duration(days: 360)),
-//      maxSelectedDate: _currentDate.add(Duration(days: 360)),
-//      todayButtonColor: Colors.transparent,
-//      todayBorderColor: Colors.green,
-//      markedDateMoreShowTotal:
-//      true, // null for not showing hidden events indicator
-////          markedDateIconMargin: 9,
-////          markedDateIconOffset: 3,
-//    );
-
     /// Example Calendar Carousel without header and custom prev & next button
     _calendarCarouselNoHeader = CalendarCarousel<Event>(
       todayBorderColor: Colors.blue,
       onDayPressed: (DateTime date, List<Event> events) {
         this.setState(() => _currentDate2 = date);
         print('current date date $_currentDate2');
+//        _events = new List();
         events.forEach((event) => print(event.title));
+//        events.forEach((event) => _events.add(event));
+      _events = events;
       },
       markedDateIconBuilder: (event) {
         return event.icon;
@@ -203,7 +209,6 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
       ),
       thisMonthDayBorderColor: Colors.grey,
       weekFormat: false,
-//      firstDayOfWeek: 4,
       markedDatesMap: _markedDateMap,
       height: 420.0,
       selectedDateTime: _currentDate2,
@@ -212,21 +217,11 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
       markedDateCustomShapeBorder: CircleBorder(
           side: BorderSide(color: Colors.red)
       ),
-//      markedDateCustomTextStyle: TextStyle(
-//        fontSize: 18,
-//        color: Colors.blue,
-//      ),
       showHeader: false,
       todayTextStyle: TextStyle(
         color: Colors.white,
       ),
        markedDateShowIcon: true,
-//       markedDateIconMaxShown: 2,
-//       markedDateIconBuilder: (event) {
-//         return event.icon;
-//       },
-      // markedDateMoreShowTotal:
-      //     true,
       markedDateMoreShowTotal: true,
       todayButtonColor: Colors.blue,
       selectedDayTextStyle: TextStyle(
@@ -317,7 +312,7 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
               Container(
                 margin: EdgeInsets.fromLTRB(4, 0, 4, 2),
                 height: 250,
-                child: GetEventList()
+                child: GetEventList(_events),
               )
             ],
           ),
@@ -325,58 +320,89 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
   }
 }
 
-class GetEventList extends StatelessWidget {
+class GetEventListState extends State<GetEventList>{
+//  final List<Event> _events ;
+//  GetEventListState(this._events);
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      //padding: const EdgeInsets.all(8),
-        children: <Widget>[
-          Container(
-            height: 50,
-            color: Colors.amber[600],
-            child: const Center(child: Text('Entry A')),
+//    _events.add(Event(title: 'Text 1 ',date:  DateTime(2020, 7, 6)));
+    return ListView.builder(
+        itemCount: widget._events.length,
+        itemBuilder: (BuildContext context , int index){
+          var event = widget._events[index];
+          return InkWell(
+            onTap: (){
+              int mod = index%2;
+              if(mod == 0){
+                _showMyDialog('Aviso', 'Essa agenda está ocupada');
+              }else{
+                _showMyDialog('Confirmação', 'O profissional receberá sua solicitação da agenda e irá responser se aceita ou não. Por favor aguarde a confimação do profissional.');
+              }
+            },
+            child: Container(
+              height: 50,
+              child: Card(
+                child: Row(
+                  children: <Widget>[
+                    Icon(Icons.calendar_today,color: Colors.blue,),
+                    Text(event.title),
+                    Visibility(
+                      visible: index%2 == 0,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.alarm_off,color: Colors.red,),
+                            Text(' ocupada',style: TextStyle(color: Colors.red),)
+                          ],
+                        )),
+                    Visibility(
+                      visible: index%2 > 0,
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.alarm_on,color: Colors.green,),
+                            Text(' marcar',style: TextStyle(color: Colors.green),)
+                          ],
+                        ))
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+  Future<void> _showMyDialog(String title, String body) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(body),
+              ],
+            ),
           ),
-          Container(
-            height: 50,
-            color: Colors.amber[500],
-            child: const Center(child: Text('Entry B')),
-          ),
-          Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry C')),
-          ),Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry D')),
-          ),Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry F')),
-          ),Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry G')),
-          ),Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry H')),
-          ),Container(
-            height: 50,
-            color: Colors.amber[100],
-            child: const Center(child: Text('Entry I')),
-          ),
-        ]
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
+  }
+}
 
-    //                ListView.builder(
-//                    itemCount: _markedDateMap.events != null?_markedDateMap.events.length: 0,
-//                    itemBuilder: (BuildContext context, int index){
-//                      return Container(
-//                        height: 30,
-//                        child: Center(child: Text('{Event : ${_markedDateMap.events[index]}')),
-//                      );
-//                    }),
+class GetEventList extends StatefulWidget {
+  final List<Event> _events ;//= new List();
+  GetEventList(this._events);
+  @override
+  State<StatefulWidget> createState() {
+    return GetEventListState();
   }
 }
 
