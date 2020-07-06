@@ -107,37 +107,37 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
       new DateTime(2020, 7, 13): [
         new Event(
           date: new DateTime(2020, 7, 13,10,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,10,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,10,0,0)),
           icon: _eventIcon,
         ),
         new Event(
           date: new DateTime(2020, 7, 13,11,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,11,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,11,0,0)),
           icon: _eventIcon,
         ),
         new Event(
           date: new DateTime(2020, 7, 13,13,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,13,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,13,0,0)),
           icon: _eventIcon,
         ),new Event(
           date: new DateTime(2020, 7, 13,14,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,14,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,14,0,0)),
           icon: _eventIcon,
         ),new Event(
           date: new DateTime(2020, 7, 13,15,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,15,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,15,0,0)),
           icon: _eventIcon,
         ),new Event(
           date: new DateTime(2020, 7, 13,16,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,16,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,16,0,0)),
           icon: _eventIcon,
         ),new Event(
           date: new DateTime(2020, 7, 13,17,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,17,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,17,0,0)),
           icon: _eventIcon,
         ),new Event(
           date: new DateTime(2020, 7, 13,18,0,0),
-          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 10,18,0,0)),
+          title: DateFormat('dd/MM/yyyy HH:mm').format(new DateTime(2020, 7, 13,18,0,0)),
           icon: _eventIcon,
         ),
       ],

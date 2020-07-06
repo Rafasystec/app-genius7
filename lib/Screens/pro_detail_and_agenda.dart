@@ -29,17 +29,24 @@ class ScreenProDetailAgenda extends StatelessWidget{
             CardTop(_responsePro),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 2, 8, 0),
-              child: Container(
-                decoration: myBoxDecoration(),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.calendar_today,color: Colors.white),
-                      tooltip: 'Ver a agenda do profissional',
-                      onPressed: null,
-                    ),
-                    Text('Ver a agenda',style: TextStyle(color: Colors.white,fontSize: 24.0))
-                  ],
+              child: InkWell(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenAgendaPro(title: 'Agenda',)));
+                },
+                child: Container(
+                  decoration: myBoxDecoration(),
+                  child: Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.calendar_today,color: Colors.white),
+                        tooltip: 'Ver a agenda do profissional',
+                        onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenAgendaPro(title: 'Agenda',)));
+                        },
+                      ),
+                      Text('Ver a agenda',style: TextStyle(color: Colors.white,fontSize: 24.0))
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -52,9 +59,7 @@ class ScreenProDetailAgenda extends StatelessWidget{
                     IconButton(
                       icon: Icon(Icons.chat,color: Colors.white,),
                       tooltip: 'Faça uma pergunta',
-                      onPressed: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenAgendaPro(title: 'Agenda',)));
-                      },
+                      onPressed: null,
                     ),
                     Text('Faça uma pergunta',style: TextStyle(color: Colors.white,fontSize: 24.0),)
                   ],
