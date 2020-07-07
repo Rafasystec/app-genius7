@@ -1,38 +1,46 @@
 
 import 'package:app/Screens/Profile.dart';
+import 'package:app/Screens/list_pro.dart';
 import 'package:app/components/centered_message.dart';
 import 'package:app/components/progress_bar.dart';
 import 'package:app/response/response_group_list.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '../const.dart';
 
 class ScreenGroupAreas extends StatelessWidget {
 
   Future<List<ResponseGroupList>> _is() async{
     List<ResponseGroupList> list = new List();
-    list.add(ResponseGroupList(1,'https://images.wisegeek.com/office-space-with-computers.jpg','OVENARIA'));
-    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','ESTETICA'));
-    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','CUIDADOS DO LAR'));
-    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','MARCENARIA'));
-    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','AUTO-PEÇAS'));
-    list.add(ResponseGroupList(2,'https://images.wisegeek.com/office-space-with-computers.jpg','OFICINAS'));
+    list.add(ResponseGroupList(1,'https://blogdaliga.com.br/wp-content/uploads/2019/08/alvenaria.jpg','ALVENARIA'));
+    list.add(ResponseGroupList(2,'https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0R0f00001Fdh3JEAR/5d8e1f15e4b09720b65d1d2f.jpg&w=710&h=462','ESTÉTICA'));
+    list.add(ResponseGroupList(2,'https://conteudo.imguol.com.br/c/entretenimento/85/2020/03/10/produtos-de-limpeza-1583862507502_v2_1254x837.jpg','CUIDADOS DO LAR'));
+    list.add(ResponseGroupList(2,'https://www.quadrilatero.ind.br/cache/images/85-pt-br-1170x520.jpg','MARCENARIA'));
+    list.add(ResponseGroupList(2,'https://novovarejo.com.br/wp-content/uploads/2020/02/qual-autopeca-mais-vendida-1170x694.jpg','AUTO-PEÇAS'));
+    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
     return list;
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return
+      Scaffold(
         appBar: AppBar(
           title: Text('Escolha um grupo'),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.exit_to_app,
-                color: Colors.white,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
+//          actions: <Widget>[
+//            IconButton(
+//              icon: Icon(
+//                Icons.exit_to_app,
+//                color: Colors.white,
+//              ),
+//              onPressed: () => Navigator.pop(context),
+//            ),
+//          ],
         ),
         body: FutureBuilder<List<ResponseGroupList>>(
           future: Future.delayed(Duration(seconds: 1)).then((value) => _is() ) ,
@@ -59,8 +67,7 @@ class ScreenGroupAreas extends StatelessWidget {
             return CenteredMessage('No entry found!',icon: Icons.warning,);
 
           },),
-      ),
-    );
+      );
   }
 
 }
@@ -85,35 +92,38 @@ class InitialListItem extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        GestureDetector(
-          onTap: (){
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Profile()));
-          },
-          child: Card(
-            child: Container(
-              width: 400.0,
-              height: 150.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                color: Colors.redAccent,
+    return Card(
+      child: GestureDetector(
+        onTap: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ListPro(_groupList.groupId)));
+        },
+        child: ListTile(
+          leading: _groupList.bunner != null
+              ? CachedNetworkImage(
+            placeholder: (context, url) => Container(
+              child: CircularProgressIndicator(
+                strokeWidth: 1.0,
+                valueColor: AlwaysStoppedAnimation<Color>(themeColor),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  _groupList.bunner != null ? _groupList.bunner : "",
-                  height: 150.0,
-                  width: 100.0,
-                  fit: BoxFit.fill,
-                ),
-              ),
+              width: 50.0,
+              height: 50.0,
+              padding: EdgeInsets.all(15.0),
             ),
+            imageUrl: _groupList.bunner,
+            width: 80.0,
+            height: 50.0,
+            fit: BoxFit.cover,
+          )
+              : Icon(
+            Icons.warning,
+            size: 50.0,
+            color: greyColor,
           ),
+          title: Text(_groupList.description),
+          subtitle: Text('Manicure, cabeleleira...'),
+          trailing: Icon(Icons.more_vert),
         ),
-        Text(_groupList.description,style: TextStyle(fontSize: 26.0,color: Colors.black,fontStyle: FontStyle.normal),)
-      ],
+      ),
     );
 
   }

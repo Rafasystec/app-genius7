@@ -49,7 +49,7 @@ packages:
       name: basic_utils
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.4"
+    version: "2.5.5"
   boolean_selector:
     dependency: transitive
     description:
@@ -247,7 +247,7 @@ packages:
     source: hosted
     version: "0.14.0+9"
   firebase_core:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
@@ -343,7 +343,7 @@ packages:
       name: flutter_keyboard_visibility
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "3.2.1"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -395,7 +395,7 @@ packages:
       name: flutter_typeahead
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.3"
+    version: "1.8.5"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -470,7 +470,7 @@ packages:
       name: http_interceptor
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1"
   http_multi_server:
     dependency: transitive
     description:
@@ -498,7 +498,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.7+2"
+    version: "0.6.7+4"
   image_picker_platform_interface:
     dependency: transitive
     description:

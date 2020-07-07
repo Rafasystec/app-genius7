@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/Screens/agenda_cli_detail.dart';
+import 'package:app/Screens/group_area_list.dart';
+import 'package:app/response/response_cli_agenda.dart';
+import 'package:app/webservice/cli_ws.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +23,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'components/centered_message.dart';
 import 'components/loading.dart';
+import 'components/progress_bar.dart';
 import 'const.dart';
 import 'main.dart';
 import 'settings.dart';
@@ -232,7 +237,7 @@ class HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'MAIN',
+          'HOME',
           style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -263,31 +268,43 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
+//          Navigator.push(
+//              context, MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
+        },
+        child: Icon(Icons.calendar_today,color: Colors.black,),
+        backgroundColor: Color(0xfff5a623),
+      ),
       body: WillPopScope(
         child: Stack(
           children: <Widget>[
-            // List
-            Container(
-              child: StreamBuilder(
-                stream: Firestore.instance.collection('users').snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      padding: EdgeInsets.all(10.0),
-                      itemBuilder: (context, index) => buildItem(context, snapshot.data.documents[index]),
-                      itemCount: snapshot.data.documents.length,
-                    );
-                  }
-                },
-              ),
+            FutureBuilder<List<ResponseCliAgenda>>(
+              future: Future.delayed(Duration(seconds: 1)).then((value) => getAllCliAgenda(0)),
+              builder: (context,snapshot){
+                switch(snapshot.connectionState) {
+                  case ConnectionState.none:
+                    break;
+                  case ConnectionState.waiting:
+                    return ProgressBar();
+                    break;
+                  case ConnectionState.active:
+                    break;
+                  case ConnectionState.done:
+                    if(snapshot.hasData) {
+                      final List<ResponseCliAgenda> pros = snapshot.data;
+//                      if (pros.isNotEmpty) {
+                        return listCliAgenda(snapshot.data);
+//                      }
+                    }else if(snapshot.hasError){
+                      return CenteredMessage('Sorry! We got an error',icon: Icons.error,);
+                    }
+                    break;
+                }
+                return CenteredMessage('No entry found!',icon: Icons.warning,);
+              },
             ),
-
             // Loading
             Positioned(
               child: isLoading ? const Loading() : Container(),
@@ -299,90 +316,28 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildItem(BuildContext context, DocumentSnapshot document) {
-    if (document['id'] == currentUserId) {
-      return Container();
-    } else {
-      return Container(
-        child: FlatButton(
-          child: Row(
-            children: <Widget>[
-              Material(
-                child: document['photoUrl'] != null
-                    ? CachedNetworkImage(
-                        placeholder: (context, url) => Container(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.0,
-                            valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                          ),
-                          width: 50.0,
-                          height: 50.0,
-                          padding: EdgeInsets.all(15.0),
-                        ),
-                        imageUrl: document['photoUrl'],
-                        width: 50.0,
-                        height: 50.0,
-                        fit: BoxFit.cover,
-                      )
-                    : Icon(
-                        Icons.account_circle,
-                        size: 50.0,
-                        color: greyColor,
-                      ),
-                borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                clipBehavior: Clip.hardEdge,
+  Widget listCliAgenda(List<ResponseCliAgenda> list){
+    return ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (BuildContext context,int index){
+          var item = list[index];
+          return GestureDetector(
+            onTap: (){
+
+            },
+            child: Card(
+              child: ListTile(
+                leading: Icon(Icons.calendar_today,color: Colors.blue,size: 50.0,),
+                title: Text(item.date),
+                subtitle: Text(item.namePro),
+                trailing: Icon(Icons.more_vert),
               ),
-              Flexible(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          'Nickname: ${document['nickname']}',
-                          style: TextStyle(color: primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 5.0),
-                      ),
-                      Container(
-                        child: Text(
-                          'About me: ${document['aboutMe'] ?? 'Not available'}',
-                          style: TextStyle(color: primaryColor),
-                        ),
-                        alignment: Alignment.centerLeft,
-                        margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-                      )
-                    ],
-                  ),
-                  margin: EdgeInsets.only(left: 20.0),
-                ),
-              ),
-            ],
-          ),
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ScreenCliAgendaDetail(
-//                      peerId: document.documentID,
-//                      peerAvatar: document['photoUrl'],
-                    )));
-                  //---------------------------------
-                  //The original code calls the Chat.
-                  //---------------------------------
-//                    builder: (context) => Chat(
-//                          peerId: document.documentID,
-//                          peerAvatar: document['photoUrl'],
-//                        )));
-          },
-          color: greyColor2,
-          padding: EdgeInsets.fromLTRB(25.0, 10.0, 25.0, 10.0),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        ),
-        margin: EdgeInsets.only(bottom: 10.0, left: 5.0, right: 5.0),
-      );
-    }
+            ),
+          );
+        }
+    );
   }
+
 }
 
 class Choice {

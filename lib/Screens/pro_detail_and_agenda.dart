@@ -1,3 +1,4 @@
+import 'package:app/Screens/chat.dart';
 import 'package:app/Screens/screen_pro_agenda.dart';
 import 'package:app/components/pro_rating.dart';
 import 'package:app/components/prod_detail.dart';
@@ -13,8 +14,8 @@ class ScreenProDetailAgenda extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
 
-    return MaterialApp(
-      home: Scaffold(
+    return
+       Scaffold(
         appBar: AppBar(
           title: Text('Agenda'),
 //          actions: <Widget>[
@@ -59,7 +60,9 @@ class ScreenProDetailAgenda extends StatelessWidget{
                     IconButton(
                       icon: Icon(Icons.chat,color: Colors.white,),
                       tooltip: 'Faça uma pergunta',
-                      onPressed: null,
+                      onPressed: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Chat(peerId: 'peerID',peerAvatar: 'avatar',)));
+                      },
                     ),
                     Text('Faça uma pergunta',style: TextStyle(color: Colors.white,fontSize: 24.0),)
                   ],
@@ -91,14 +94,12 @@ class ScreenProDetailAgenda extends StatelessWidget{
             ),
           ],
         ),
-
-      ),
     );
 
   }
   BoxDecoration myBoxDecoration() {
     return BoxDecoration(
-      color: Colors.blue,
+      color: Color(0xffdd4b39),
       borderRadius: BorderRadius.all(
           Radius.circular(5.0) //         <--- border radius here
       ),
