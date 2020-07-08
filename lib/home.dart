@@ -23,6 +23,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'Screens/cli_agenda_detail.dart';
 import 'components/centered_message.dart';
 import 'components/loading.dart';
 import 'components/progress_bar.dart';
@@ -45,13 +46,15 @@ class HomeScreenState extends State<HomeScreen> {
   final String currentUserId;
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+//  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   bool isLoading = false;
-  List<Choice> choices = const <Choice>[
-    const Choice(title: 'Settings', icon: Icons.settings),
-    const Choice(title: 'Log out', icon: Icons.exit_to_app),
-  ];
+  List<ResponseCliAgenda> agendas = new List();
+//  List<Choice> choices = const <Choice>[
+//    const Choice(title: 'Settings', icon: Icons.settings),
+//    const Choice(title: 'Log out', icon: Icons.exit_to_app),
+//  ];
+
 
   @override
   void initState() {
@@ -91,13 +94,7 @@ class HomeScreenState extends State<HomeScreen> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  void onItemMenuPress(Choice choice) {
-    if (choice.title == 'Log out') {
-      handleSignOut();
-    } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
-    }
-  }
+
 
   void showNotification(message) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
@@ -215,25 +212,11 @@ class HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<Null> handleSignOut() async {
-    this.setState(() {
-      isLoading = true;
-    });
 
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
-
-    this.setState(() {
-      isLoading = false;
-    });
-
-    Navigator.of(context)
-        .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyApp()), (Route<dynamic> route) => false);
-  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -241,38 +224,11 @@ class HomeScreenState extends State<HomeScreen> {
           style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: <Widget>[
-          PopupMenuButton<Choice>(
-            onSelected: onItemMenuPress,
-            itemBuilder: (BuildContext context) {
-              return choices.map((Choice choice) {
-                return PopupMenuItem<Choice>(
-                    value: choice,
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          choice.icon,
-                          color: primaryColor,
-                        ),
-                        Container(
-                          width: 10.0,
-                        ),
-                        Text(
-                          choice.title,
-                          style: TextStyle(color: primaryColor),
-                        ),
-                      ],
-                    ));
-              }).toList();
-            },
-          ),
-        ],
+
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
-//          Navigator.push(
-//              context, MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
+          goToGroupAreas(context);
         },
         child: Icon(Icons.calendar_today,color: Colors.black,),
         backgroundColor: Color(0xfff5a623),
@@ -292,14 +248,32 @@ class HomeScreenState extends State<HomeScreen> {
                   case ConnectionState.active:
                     break;
                   case ConnectionState.done:
-                    if(snapshot.hasData) {
-                      final List<ResponseCliAgenda> pros = snapshot.data;
-//                      if (pros.isNotEmpty) {
-                        return listCliAgenda(snapshot.data);
-//                      }
-                    }else if(snapshot.hasError){
+
+                    if(snapshot.hasError){
                       return CenteredMessage('Sorry! We got an error',icon: Icons.error,);
+                    }else{
+                      if(snapshot.hasData) {
+                        agendas = snapshot.data;
+                        if(agendas == null || agendas.isEmpty) {
+                          return showEmptyListMessage(context);
+                        }else{
+                          return listCliAgenda();
+                        }
+                      } else{
+                        return showEmptyListMessage(context);
+                      }
                     }
+//                    if(snapshot.hasData) {
+//                      agendas = snapshot.data;
+//                      if(agendas == null || agendas.isEmpty) {
+//                        return showEmptyListMessage(context);
+//                      }else{
+//                        return listCliAgenda();
+//                      }
+//
+//                    }else if(snapshot.hasError){
+//                      return CenteredMessage('Sorry! We got an error',icon: Icons.error,);
+//                    }
                     break;
                 }
                 return CenteredMessage('No entry found!',icon: Icons.warning,);
@@ -316,14 +290,61 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget listCliAgenda(List<ResponseCliAgenda> list){
-    return ListView.builder(
-        itemCount: list.length,
-        itemBuilder: (BuildContext context,int index){
-          var item = list[index];
-          return GestureDetector(
-            onTap: (){
+  Center showEmptyListMessage(BuildContext context) {
+     return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Visibility(
+            child: Icon(
+              Icons.info_outline,
+              size: 50,
+              color: themeColor,
+            ),
+            visible: true,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2.0, 20, 2, 8),
+            child: SizedBox(
+              child: FlatButton(
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(fontSize: 16,color: primaryColor),
+                    text: 'Você ainda não possui nenhuma agenda, para agendar um serviço primeiro procure pelo o profissional clicando no ícone de calendário',
+                    children: <TextSpan>[
+                      TextSpan(text: ' ou clique nessa mensagem.', style: TextStyle(color: Colors.blueAccent))
+                    ],
+                  ),
+                ),
+                onPressed: (){
+                  goToGroupAreas(context);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
+  void goToGroupAreas(BuildContext context) {
+     Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenGroupAreas()));
+  }
+
+  Widget listCliAgenda(){
+    return ListView.builder(
+        itemCount: agendas.length,
+        itemBuilder: (BuildContext context,int index){
+          var item = agendas[index];//list[index];
+          return GestureDetector(
+            onTap: () async{
+              final result = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenCliAgendaDetail(item)));
+              if(result != null) {
+                setState(() {
+                  agendas.remove(result);
+                });
+              }
             },
             child: Card(
               child: ListTile(
