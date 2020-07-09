@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'const.dart';
+import 'enums/gender_enum.dart';
 
 class Settings extends StatelessWidget {
   @override
@@ -43,8 +44,10 @@ class SettingsScreenState extends State<SettingsScreen> {
   String nickname = '';
   String aboutMe = '';
   String photoUrl = '';
+  Gender gender = Gender.OTHER;
 
   bool isLoading = false;
+  bool isLoggedIn = false;
   File avatarImageFile;
 
   final FocusNode focusNodeNickname = FocusNode();
@@ -62,7 +65,11 @@ class SettingsScreenState extends State<SettingsScreen> {
     nickname = prefs.getString('nickname') ?? '';
     aboutMe = prefs.getString('aboutMe') ?? '';
     photoUrl = prefs.getString('photoUrl') ?? '';
-
+    if(id.trim().isEmpty){
+      isLoggedIn = false;
+    }else{
+      isLoggedIn = true;
+    }
     controllerNickname = TextEditingController(text: nickname);
     controllerAboutMe = TextEditingController(text: aboutMe);
 
@@ -139,6 +146,35 @@ class SettingsScreenState extends State<SettingsScreen> {
         .collection('users')
         .document(id)
         .updateData({'nickname': nickname, 'aboutMe': aboutMe, 'photoUrl': photoUrl}).then((data) async {
+      await prefs.setString('nickname', nickname);
+      await prefs.setString('aboutMe', aboutMe);
+      await prefs.setString('photoUrl', photoUrl);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      Fluttertoast.showToast(msg: "Update success");
+    }).catchError((err) {
+      setState(() {
+        isLoading = false;
+      });
+
+      Fluttertoast.showToast(msg: err.toString());
+    });
+  }
+
+  void handleSaveData() {
+    focusNodeNickname.unfocus();
+    focusNodeAboutMe.unfocus();
+
+    setState(() {
+      isLoading = true;
+    });
+
+    Firestore.instance
+        .collection('users')
+        .add({'nickname': nickname, 'aboutMe': aboutMe, 'photoUrl': photoUrl}).then((data) async {
       await prefs.setString('nickname', nickname);
       await prefs.setString('aboutMe', aboutMe);
       await prefs.setString('photoUrl', photoUrl);
@@ -279,6 +315,34 @@ class SettingsScreenState extends State<SettingsScreen> {
                     ),
                     margin: EdgeInsets.only(left: 30.0, right: 30.0),
                   ),
+                  //Select gender
+                  Container(
+                    child: Text(
+                      'Sexo',
+                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: primaryColor),
+                    ),
+                    margin: EdgeInsets.only(left: 10.0, top: 30.0, bottom: 5.0),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(primaryColor: primaryColor),
+                      child: DropdownButton<Gender>(
+                        value: gender,
+                        onChanged: (Gender gender){
+                          setState(() {
+                            this.gender = gender;
+                          });
+                        },
+                        items: Gender.values.map((Gender gender){
+                          return DropdownMenuItem<Gender>(
+                            value: gender,
+                            child: Text(getTextEnumGender(gender)),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  )
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
               ),
@@ -286,7 +350,7 @@ class SettingsScreenState extends State<SettingsScreen> {
               // Button
               Container(
                 child: FlatButton(
-                  onPressed: handleUpdateData,
+                  onPressed: isLoggedIn ? handleUpdateData : handleSaveData,
                   child: Text(
                     'UPDATE',
                     style: TextStyle(fontSize: 16.0),

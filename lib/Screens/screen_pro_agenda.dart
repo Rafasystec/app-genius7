@@ -303,11 +303,17 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
                   ],
                 ),
               ),
-              Container(
-                height: 260,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: 300.0,
+                  maxHeight: 800.0,
+                ),
+                child: Container(
 //                color: Colors.blue,
-                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                child: _calendarCarouselNoHeader,
+
+                  margin: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: _calendarCarouselNoHeader,
+                ),
               ), //
               Container(
                 margin: EdgeInsets.fromLTRB(4, 0, 4, 2),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/home.dart';
 import 'package:app/settings.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'components/choice.dart';
 import 'main.dart';
 
 import 'const.dart';
@@ -18,37 +21,42 @@ class ChooseTypeAccount extends StatefulWidget {
 class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
   bool isLoading = false;
   final GoogleSignIn googleSignIn = GoogleSignIn();
-  List<Choice> choices = const <Choice>[
-    const Choice(title: 'Settings', icon: Icons.settings),
-    const Choice(title: 'Log out', icon: Icons.exit_to_app),
+  List<Choice> mainChoices = const <Choice>[
+    const Choice(0,title: 'Perfil', icon: Icons.settings),
+    const Choice(1,title: 'Fechar', icon: Icons.close),
+    const Choice(2,title: 'Log out', icon: Icons.exit_to_app),
   ];
-  void onItemMenuPress(Choice choice) {
-    if (choice.title == 'Log out') {
-      handleSignOut();
-    } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
-    }
-  }
-
-  Future<Null> handleSignOut() async {
-    this.setState(() {
-      isLoading = true;
-    });
-
-    await FirebaseAuth.instance.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
-
-    this.setState(() {
-      isLoading = false;
-    });
-
-    Navigator.of(context)
-        .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyApp()), (Route<dynamic> route) => false);
-  }
 
   @override
   Widget build(BuildContext context) {
+
+    Future<Null> handleSignOut() async {
+      this.setState(() {
+        isLoading = true;
+      });
+
+      await FirebaseAuth.instance.signOut();
+      await googleSignIn.disconnect();
+      await googleSignIn.signOut();
+
+      this.setState(() {
+        isLoading = false;
+      });
+
+      Navigator.of(context)
+          .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyApp()), (Route<dynamic> route) => false);
+    }
+
+    void onItemMenuPress(Choice choice) {
+      if (choice.id == 2) {
+        handleSignOut();
+      }else if(choice.id == 1){
+        exit(0);
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -60,7 +68,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
           PopupMenuButton<Choice>(
             onSelected: onItemMenuPress,
             itemBuilder: (BuildContext context) {
-              return choices.map((Choice choice) {
+              return mainChoices.map((Choice choice) {
                 return PopupMenuItem<Choice>(
                     value: choice,
                     child: Row(
