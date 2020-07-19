@@ -210,7 +210,7 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
       thisMonthDayBorderColor: Colors.grey,
       weekFormat: false,
       markedDatesMap: _markedDateMap,
-      height: 420.0,
+      height: 330.0,
       selectedDateTime: _currentDate2,
       targetDateTime: _targetDateTime,
       customGridViewPhysics: NeverScrollableScrollPhysics(),
@@ -303,17 +303,10 @@ class _MyHomePageState extends State<ScreenAgendaPro> {
                   ],
                 ),
               ),
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: 300.0,
-                  maxHeight: 800.0,
-                ),
-                child: Container(
-//                color: Colors.blue,
-
-                  margin: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: _calendarCarouselNoHeader,
-                ),
+              Container(
+//              color: Colors.blue,
+                margin: EdgeInsets.symmetric(horizontal: 16.0),
+                child: _calendarCarouselNoHeader,
               ), //
               Container(
                 margin: EdgeInsets.fromLTRB(4, 0, 4, 2),

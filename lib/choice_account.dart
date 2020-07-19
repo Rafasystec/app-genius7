@@ -1,6 +1,10 @@
 import 'dart:io';
 
+import 'package:app/Screens/digital_menu.dart';
+import 'package:app/Screens/digital_menu_read_qrcode.dart';
+import 'package:app/components/screen_util.dart';
 import 'package:app/home.dart';
+import 'package:app/restaurant/home.dart';
 import 'package:app/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -104,51 +108,13 @@ Widget buildItem(BuildContext context) {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ButtonTheme(
-            minWidth: 220.0,
-            height: 70.0,
-            child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                  side: BorderSide(color: Colors.red),
-              ),
-                onPressed: (){
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                },
-                child: Text(
-                  'SOU CLIENTE',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                color: Color(0xffdd4b39),
-                highlightColor: Color(0xffff7f7f),
-                splashColor: Colors.transparent,
-                textColor: Colors.white,
-                padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)
-            ),
-          ),
+          appButtonTheme(context, 'SOU CLIENTE', ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()))),
           SizedBox(height: 10,),
-          ButtonTheme(
-            minWidth: 220.0,
-            height: 70.0,
-            child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                  side: BorderSide(color: Colors.red),
-              ),
-                onPressed: (){
-                  Fluttertoast.showToast(msg: 'Ainda não implementado');
-                },
-                child: Text(
-                  'SOU PROFISSIONAL',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                color: Color(0xffdd4b39),
-                highlightColor: Color(0xffff7f7f),
-                splashColor: Colors.transparent,
-                textColor: Colors.white,
-                padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
-          ),
+          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
+          SizedBox(height: 10,),
+          appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode()))),
+          SizedBox(height: 10,),
+          appButtonTheme(context, 'RESTAURANTE', ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreenRestaurant())))
           ],
       )
       );

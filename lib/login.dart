@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'components/loading.dart';
 import 'const.dart';
 import 'home.dart';
-
+///This login file well server both for client and pro
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key, this.title}) : super(key: key);
 
@@ -92,15 +92,15 @@ class LoginScreenState extends State<LoginScreen> {
 
         // Write data to local
         currentUser = firebaseUser;
-        await prefs.setString('id', currentUser.uid);
-        await prefs.setString('nickname', currentUser.displayName);
-        await prefs.setString('photoUrl', currentUser.photoUrl);
+        await prefs.setString(ID_USER_CLI_FIREBASE, currentUser.uid);
+        await prefs.setString(NICK_NAME, currentUser.displayName);
+        await prefs.setString(PHOTO_URL, currentUser.photoUrl);
       } else {
         // Write data to local
-        await prefs.setString('id', documents[0]['id']);
-        await prefs.setString('nickname', documents[0]['nickname']);
-        await prefs.setString('photoUrl', documents[0]['photoUrl']);
-        await prefs.setString('aboutMe', documents[0]['aboutMe']);
+        await prefs.setString(ID_USER_CLI_FIREBASE, documents[0]['id']);
+        await prefs.setString(NICK_NAME, documents[0]['nickname']);
+        await prefs.setString(PHOTO_URL, documents[0]['photoUrl']);
+        await prefs.setString(ABOUT_ME, documents[0]['aboutMe']);
       }
       Fluttertoast.showToast(msg: "Sign in success");
       this.setState(() {

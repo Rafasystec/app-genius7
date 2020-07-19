@@ -50,7 +50,7 @@ Future<bool> openDialogYesNo(BuildContext context,String message, {String title 
                     margin: EdgeInsets.only(right: 10.0),
                   ),
                   Text(
-                    'NÂO',
+                    'NÃO',
                     style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
                   )
                 ],

@@ -11,6 +11,7 @@ class ResponsePro {
   final int amountRate;
   final List<ResponseRating> ratings;
   final ResponseAddress address;
+  final String idUserFirebase;
 
-  ResponsePro(this.idPro,this.name,this.rant,this.url,this.about,this.attendances,this.amountRate,this.ratings,{this.address});
+  ResponsePro(this.idPro,this.name,this.rant,this.url,this.about,this.attendances,this.amountRate,this.ratings,this.idUserFirebase,{this.address});
 }

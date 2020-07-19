@@ -2,18 +2,28 @@ import 'package:app/Screens/chat.dart';
 import 'package:app/Screens/screen_pro_agenda.dart';
 import 'package:app/components/pro_rating.dart';
 import 'package:app/components/prod_detail.dart';
+import 'package:app/const.dart';
+import 'package:app/login.dart';
 import 'package:app/response/response_pro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ScreenProDetailAgenda extends StatelessWidget{
 
   final ResponsePro _responsePro;
   ScreenProDetailAgenda(this._responsePro);
 
+
   @override
   Widget build(BuildContext context) {
-
+    SharedPreferences prefs;
+    String idClientFirebase;
+    Future<String> readLocal() async {
+      prefs = await SharedPreferences.getInstance();
+      idClientFirebase = prefs.getString(ID_USER_CLI_FIREBASE) ?? '';
+      return idClientFirebase;
+    }
     return
        Scaffold(
         appBar: AppBar(
@@ -35,7 +45,7 @@ class ScreenProDetailAgenda extends StatelessWidget{
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenAgendaPro(title: 'Agenda',)));
                 },
                 child: Container(
-                  decoration: myBoxDecoration(),
+                  decoration: btnBoxDecoration(),
                   child: Row(
                     children: <Widget>[
                       IconButton(
@@ -53,19 +63,30 @@ class ScreenProDetailAgenda extends StatelessWidget{
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-              child: Container(
-                decoration: myBoxDecoration(),
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.chat,color: Colors.white,),
-                      tooltip: 'Faça uma pergunta',
-                      onPressed: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Chat(peerId: 'peerID',peerAvatar: 'avatar',)));
-                      },
-                    ),
-                    Text('Faça uma pergunta',style: TextStyle(color: Colors.white,fontSize: 24.0),)
-                  ],
+              child: InkWell(
+                onTap: (){
+                  readLocal().then((value){
+                    if(value.isEmpty){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(title: 'Faça o login',)));
+                    }else{
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => Chat(peerId: _responsePro.idUserFirebase,peerAvatar: 'avatar',)));
+                    }
+                  });
+                },
+                child: Container(
+                  decoration: btnBoxDecoration(),
+                  child: Row(
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.chat,color: Colors.white,),
+                        tooltip: 'Faça uma pergunta',
+                        onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => Chat(peerId: 'peerID',peerAvatar: 'avatar',)));
+                        },
+                      ),
+                      Text('Faça uma pergunta',style: TextStyle(color: Colors.white,fontSize: 24.0),)
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -97,14 +118,14 @@ class ScreenProDetailAgenda extends StatelessWidget{
     );
 
   }
-  BoxDecoration myBoxDecoration() {
-    return BoxDecoration(
-      color: Color(0xffdd4b39),
-      borderRadius: BorderRadius.all(
-          Radius.circular(5.0) //         <--- border radius here
-      ),
-    );
-  }
+//  BoxDecoration btnBoxDecoration() {
+//    return BoxDecoration(
+//      color: Color(0xffdd4b39),
+//      borderRadius: BorderRadius.all(
+//          Radius.circular(5.0) //         <--- border radius here
+//      ),
+//    );
+//  }
 }
 
 class CardTop extends StatelessWidget {

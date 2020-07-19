@@ -42,7 +42,9 @@ class Chat extends StatelessWidget {
 }
 
 class ChatScreen extends StatefulWidget {
+  /// is the users doc id firebase of user B (user A is the current user *you)
   final String peerId;
+  /// peerAvatar is the avatar URL
   final String peerAvatar;
 
   ChatScreen({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
@@ -96,7 +98,13 @@ class ChatScreenState extends State<ChatScreen> {
 
   readLocal() async {
     prefs = await SharedPreferences.getInstance();
-    id = prefs.getString('id') ?? '';
+    id = prefs.getString(ID_USER_CLI_FIREBASE) ?? '';
+    /*
+    Notice that when user A (current user) chat with user B (peer user),
+    the problem is which groupChatId we’ll use to read and write data chat
+    to the server since conversation of A & B need to save at the same node?
+    So my idea is hashing the A’ uid and B’ uid, then creates a string like this:
+     */
     if (id.hashCode <= peerId.hashCode) {
       groupChatId = '$id-$peerId';
     } else {
