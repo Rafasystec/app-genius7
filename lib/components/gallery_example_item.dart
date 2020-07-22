@@ -28,7 +28,7 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Hero(
-          tag: galleryExampleItem.id,
+          tag: galleryExampleItem.id != null ? galleryExampleItem.id : '',
           child: galleryExampleItem.resource != null
               ? CachedNetworkImage(
             placeholder: (context, url) => Container(

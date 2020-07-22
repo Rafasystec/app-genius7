@@ -1,5 +1,6 @@
 import 'package:app/Objects/category.dart';
 import 'package:app/Objects/category_item.dart';
+import 'package:app/Objects/digital_menu_options.dart';
 import 'package:app/Screens/digital_menu_item.dart';
 import 'package:app/Screens/digital_menu_my_orders.dart';
 import 'package:app/components/choice.dart';
@@ -14,6 +15,8 @@ import '../const.dart';
 
 
 class ScreenDigitalMenu extends StatefulWidget {
+  final DigitalMenuOptions options;
+  ScreenDigitalMenu(this.options);
   @override
   _ScreenDigitalMenuState createState() => _ScreenDigitalMenuState();
 }

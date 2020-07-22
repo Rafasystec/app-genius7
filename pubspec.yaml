@@ -54,6 +54,8 @@ dependencies:
   barcode_scan: ^3.0.1
   qr_flutter: ^3.2.0
   flutter_svg:
+  map_launcher: ^0.8.1
+  image_picker:
 
 
 dev_dependencies:
