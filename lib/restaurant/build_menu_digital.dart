@@ -110,11 +110,11 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
               Column(
                 children: <Widget>[
                   Container(
-                    height: 650,
+                    height: 660,
                     child: Form(
                       key: _formKey,
                       child: SizedBox(
-                        height: 650,
+                        height: 660,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
@@ -123,17 +123,24 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 SizedBox(height: 15,),
-                                new Text("Escolha a categoria do Item ", style: TextStyle(fontSize: 16),),
-                                new Container(
+                                Text("Escolha a categoria do Item ", style: TextStyle(fontSize: 16),),
+                                Container(
                                   padding: new EdgeInsets.all(8.0),
                                 ),
-                                new DropdownButton(
-                                  value: _currentCity,
-                                  items: _dropDownMenuItems,
-                                  onChanged: changedDropDownItem,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    DropdownButton(
+                                      value: _currentCity,
+                                      items: _dropDownMenuItems,
+                                      onChanged: changedDropDownItem,
+                                    ),
+                                    appButtonTheme(context, '+', ()=>Fluttertoast.showToast(msg: 'The deal is open a popup to put the description'),height: 20, minWidth: 60),
+                                  ],
                                 )
                               ],
                             ),
+                            SizedBox(height: 15,),
                             Center(
                               child: Container(
                                 height: 150,
@@ -146,6 +153,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 10,),
                             appButtonTheme(context, 'ADD IMAGEM PRINCIPAL', getImage,height: 25,minWidth: 60),
                             GalleryView(_galleryItems),
                             appButtonTheme(context, 'ADICIONAR IMAGEMS', getImage,height: 30,minWidth: 60),
@@ -168,7 +176,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                               if(_formKey.currentState.validate()){
                                 Fluttertoast.showToast(msg: 'Item adicionado')
                               }
-                            }),
+                            },height: 30),
 
                           ],
                         ),
@@ -192,13 +200,25 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Text(item),
-                              FlatButton(
-                                onPressed: (){
-                                  Fluttertoast.showToast(msg: 'Edit item $item');
-                                },
-                                padding: EdgeInsets.all(0),
-                                child: Icon(Icons.edit),
-                              )
+                              Row(
+                                children: <Widget>[
+                                  FlatButton(
+                                    onPressed: (){
+                                      Fluttertoast.showToast(msg: 'Edit item $item');
+                                    },
+                                    padding: EdgeInsets.all(0),
+                                    child: Icon(Icons.edit),
+                                  ),
+                                  FlatButton(
+                                    onPressed: (){
+                                      Fluttertoast.showToast(msg: 'Categoria:  $item foi excluida');
+                                    },
+                                    padding: EdgeInsets.all(0),
+                                    child: Icon(Icons.delete),
+                                  )
+                                ],
+                              ),
+
                             ],
                           ),
                         ),
