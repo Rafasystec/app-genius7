@@ -32,57 +32,6 @@ class _ScreenDigitalMenuItemState extends State<ScreenDigitalMenuItem> {
               height: 15,
             ),
               GalleryView(galleryItems),
-//            Padding(
-//              padding: const EdgeInsets.all(2.0),
-//              child: Expanded(
-//                child: Center(
-//                  child: Column(
-//                    mainAxisAlignment: MainAxisAlignment.center,
-//                    children: <Widget>[
-//                      SingleChildScrollView(
-//                        padding: EdgeInsets.all(8),
-//                        scrollDirection: Axis.horizontal,
-//                        child: Row (
-//                          mainAxisAlignment: MainAxisAlignment.center,
-//                          children: <Widget>[
-//                            GalleryExampleItemThumbnail(
-//                              galleryExampleItem: galleryItems[0],
-//                              onTap: () {
-//                                open(context, 0,galleryItems);
-//                              },
-//                            ),
-//                            GalleryExampleItemThumbnail(
-//                              galleryExampleItem: galleryItems[1],
-//                              onTap: () {
-//                                open(context, 1,galleryItems);
-//                              },
-//                            ),
-//                            GalleryExampleItemThumbnail(
-//                              galleryExampleItem: galleryItems[2],
-//                              onTap: () {
-//                                open(context, 2,galleryItems);
-//                              },
-//                            ),
-//                            GalleryExampleItemThumbnail(
-//                              galleryExampleItem: galleryItems[3],
-//                              onTap: () {
-//                                open(context, 3,galleryItems);
-//                              },
-//                            ),
-//                            GalleryExampleItemThumbnail(
-//                              galleryExampleItem: galleryItems[4],
-//                              onTap: () {
-//                                open(context, 4,galleryItems);
-//                              },
-//                            ),
-//                          ],
-//                        ),
-//                      ),
-//                    ],
-//                  ),
-//                ),
-//              ),
-//            ),
             Container(
               height: 5,
             ),

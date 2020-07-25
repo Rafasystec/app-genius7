@@ -12,6 +12,7 @@ const String ID_USER_PRO_FIREBASE = "id-user-pro-firebase";
 const String NICK_NAME = "nickname";
 const String PHOTO_URL = "photoUrl";
 const String ABOUT_ME = 'aboutMe';
+const String RESTAURANT_PATH = 'restaurant-doc-path';
 
 BoxDecoration btnBoxDecoration() {
   return BoxDecoration(

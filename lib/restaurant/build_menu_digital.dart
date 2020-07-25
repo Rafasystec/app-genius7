@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:app/Objects/category.dart';
+import 'package:app/Objects/restaurant.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,6 +14,8 @@ import 'package:image_picker/image_picker.dart';
 import '../const.dart';
 
 class BuildDigitalMenuScreen extends StatefulWidget {
+  final Restaurant _restaurant;
+  BuildDigitalMenuScreen(this._restaurant);
   @override
   _BuildDigitalMenuScreenState createState() => _BuildDigitalMenuScreenState();
 }
@@ -23,8 +28,9 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
-  List _cities =
-  ["Principal", "Entradas", "Bebidas Geladas", "Sobremesas", "Bebidas Quentes"];
+//  List _cities =
+//  ["Principal", "Entradas", "Bebidas Geladas", "Sobremesas", "Bebidas Quentes"];
+  List<Category> categories;
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentCity;
@@ -35,38 +41,46 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   GalleryExampleItem _mainImageItem;
 
 
-  List<GalleryExampleItem> loadImagesFromStorage(){
-      //TODO change it later to get from firestorage
-    return   <GalleryExampleItem>[
-  GalleryExampleItem(
-  id: "tag1",
-  resource: "https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0RG000000i1j38MAA/59dcbda8e4b0b478a2d2c683.jpg&w=710&h=462",
-  ),
-  GalleryExampleItem(id: "tag2", resource: "https://panfleteria.sfo2.digitaloceanspaces.com/img/ofertas/Desconto-Pratos-Parque-Aquatico-ChicoCaranguejo-vr02_5.jpg"),
-  GalleryExampleItem(
-  id: "tag3",
-  resource: "https://www.idasevindasblog.com/wp-content/uploads/2017/08/DSC_1429-1170x775.jpg",
-  ),
-  GalleryExampleItem(
-  id: "tag4",
-  resource: "https://static.baratocoletivo.com.br/2019/0411/oferta_15550143112338_Destaque.jpg",
-  ),
-  GalleryExampleItem(
-  id: "tag5",
-  resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
-  ),
-  ];
+  List<GalleryExampleItem> loadImagesFromStorage(List<String>urls){
+    List<GalleryExampleItem> gallery =  List();
+    int index = 0;
+    for(String url in urls){
+        GalleryExampleItem( id:(index++).toString(),resource: url,isSvg: false);
+      }
+      return gallery;
+//    return   <GalleryExampleItem>[
+//  GalleryExampleItem(
+//  id: "tag1",
+//  resource: "https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0RG000000i1j38MAA/59dcbda8e4b0b478a2d2c683.jpg&w=710&h=462",
+//  ),
+//  GalleryExampleItem(id: "tag2", resource: "https://panfleteria.sfo2.digitaloceanspaces.com/img/ofertas/Desconto-Pratos-Parque-Aquatico-ChicoCaranguejo-vr02_5.jpg"),
+//  GalleryExampleItem(
+//  id: "tag3",
+//  resource: "https://www.idasevindasblog.com/wp-content/uploads/2017/08/DSC_1429-1170x775.jpg",
+//  ),
+//  GalleryExampleItem(
+//  id: "tag4",
+//  resource: "https://static.baratocoletivo.com.br/2019/0411/oferta_15550143112338_Destaque.jpg",
+//  ),
+//  GalleryExampleItem(
+//  id: "tag5",
+//  resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
+//  ),
+//  ];
   }
   @override
   void initState() {
+    categories = widget._restaurant.menu.categories;
     _dropDownMenuItems = getDropDownMenuItems();
     _currentCity = _dropDownMenuItems[0].value;
-    _galleryItems = loadImagesFromStorage();
+    //TODO See it later
+    _galleryItems = loadImagesFromStorage(null);
     //TODO get this from database or rest api
     _mainImageItem = GalleryExampleItem(
       id: "tagMain",
       resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
     );
+
     super.initState();
   }
   ///When we need to get image
@@ -80,10 +94,10 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
 
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     List<DropdownMenuItem<String>> items = new List();
-    for (String city in _cities) {
+    for (Category category in categories) {
       items.add(new DropdownMenuItem(
-          value: city,
-          child: new Text(city)
+          value: category.id.toString(),
+          child: new Text(category.description)
       ));
     }
     return items;
@@ -163,7 +177,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                               }
                               return null;
                             },),
-                            formFieldText('Valor',(value) {
+                            formFieldText('Valor Ex: 55.40',(value) {
                               if (value.isEmpty) {
                                 return 'Please enter some text right here';
                               }
@@ -189,17 +203,22 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
               Text('Minhas categorias'),
               SizedBox(
                 height: 200,
-                child: ListView.builder(
-                    itemCount: _cities.length,
+                child:
+//                StreamBuilder(
+//                  stream: Firestore.instance.collection("restaurant").document("IHwVo5efFvYETtQuleCF").snapshots(),
+//                  builder: (context, snapshot){
+//                    if(!snapshot.hasData) return const Text('Loading...');
+                    ListView.builder(
+                    itemCount: categories.length,
                     itemBuilder: (BuildContext context, int index){
-                      var item = _cities[index];
+                      var item = categories[index];
                       return Container(
                         height: 50,
                         child: Card(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text(item),
+                              Text(item.description),
                               Row(
                                 children: <Widget>[
                                   FlatButton(
@@ -224,6 +243,10 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                         ),
                       );
                     }),
+//                  },
+//                )
+                
+
               )
             ]
           ),

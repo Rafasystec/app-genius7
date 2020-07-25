@@ -5,6 +5,7 @@ import 'package:app/components/image_circle.dart';
 import 'package:app/response/response_local_restaurant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../const.dart';
 import 'gallery_example_item.dart';
@@ -111,3 +112,8 @@ Widget formFieldText(String hint,FormFieldValidator<String> validator){
     margin: EdgeInsets.only(left: 18.0, right: 18.0)
   );
 }
+
+String formatCurrency(num value){
+  return  'R\$ ${NumberFormat("#,##0.00", "pt_BR").format(value)}';
+}
+

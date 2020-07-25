@@ -1,3 +1,5 @@
+import 'package:app/Objects/digital_menu_options.dart';
+import 'package:app/Screens/digital_menu.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/pro_rating.dart';
@@ -28,7 +30,14 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
           GalleryView(galleryItemsLocal),
           Container(
             height: 50,
-              child: appButtonTheme(context, 'IR PARA O LOCAL', ()=>openMapsSheet(context)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  appButtonTheme(context, 'VER LOCAL', ()=>openMapsSheet(context),minWidth: 80),
+                  SizedBox(width: 20,),
+                  appButtonTheme(context, 'VER MENU', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(2,0)))) ,minWidth: 80),
+                ],
+              )
           ),
           SizedBox(height: 10,),
           Expanded(

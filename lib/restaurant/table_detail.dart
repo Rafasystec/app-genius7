@@ -17,10 +17,27 @@ class _TableDetailScreenState extends State<TableDetailScreen> {
         title: Text('MESA ${widget.table.number}'),
       ),
       body: Center(
-        child: Container(
+        child: Column(
+          children: <Widget>[
+            getTableDetails(widget.table),
+            getTableQRCode(),
+            getPartial(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getTableQRCode(){
+    return Center(
+      child: Container(
+
+        padding: EdgeInsets.all(8.0),
+        child: Card(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('Peça para o cliente ler o QR-CODE para iniciar a mesa'),
+              Center(child: Text(getQRCodeLabelDescription(widget.table))),
               Container(
                 height: 200,
                 width: 200,
@@ -33,6 +50,85 @@ class _TableDetailScreenState extends State<TableDetailScreen> {
 
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  String getQRCodeLabelDescription(WaiterTable table){
+    String result = 'Peça para o cliente ler o QR-CODE';
+    switch(table.status){
+      case EnumTableStatus.OPEN :
+        result += ' para abrir a mesa.';
+        break;
+      case EnumTableStatus.BUSY:
+        result += ' para gerar uma comanda separada.';
+        break;
+      case EnumTableStatus.RESERVED:
+        result += ' para iniciar a reserva';
+        break;
+      default :
+        result += ' ';
+        break;
+    }
+    return result;
+  }
+
+  Widget getTableDetails(WaiterTable table){
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Text('Total até o momento: '),
+                Text('R 240,00',style: TextStyle(color: Colors.green, fontSize: 16.0),),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text('Taxa de serviço (10%): '),
+                Text('R 24,00',style: TextStyle(color: Colors.red, fontSize: 16.0),),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Text('Total da mesa: '),
+                Text('R 264,00',style: TextStyle(color: Colors.black, fontSize: 18.0),),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getPartial(){
+    return Container(
+      height: 200,
+      child: Center(
+        child: ListView(
+          children: <Widget>[
+            Card(
+              child: ListTile(
+                leading: FlutterLogo(size: 56.0),
+                title: Text('Comanda 214'),
+                subtitle: Text('Clique aqui para detalhes'),
+                trailing: Text('R \$ 100,00'),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                            backgroundImage: NetworkImage('https://image.freepik.com/vetores-gratis/empresaria-elegante-avatar-feminino_24877-18073.jpg'),
+                      ),
+                title: Text('Comanda 215 - Flávia'),
+                subtitle: Text('Clique aqui para detalhes'),
+                trailing: Text('R \$ 140,00'),
+              ),
+            ),
+          ],
         ),
       ),
     );
