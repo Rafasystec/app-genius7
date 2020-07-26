@@ -3,23 +3,26 @@ import 'package:app/Screens/digital_menu.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/pro_rating.dart';
+import 'package:app/components/rating_comment.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/response/response_local_restaurant.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:map_launcher/map_launcher.dart';
 
 class LocalRestaurantDetailScreen extends StatefulWidget {
-  final ResponseLocalRestaurant restaurant;
+  final DocumentSnapshot restaurant;
   LocalRestaurantDetailScreen(this.restaurant);
   @override
   _LocalRestaurantDetailScreenState createState() => _LocalRestaurantDetailScreenState();
 }
 
 class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScreen> {
+  bool _isLogged = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.restaurant.name),),
+      appBar: AppBar(title: Text(widget.restaurant['name']),),
       body: Column(
         children: <Widget>[
 
@@ -27,7 +30,7 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
           Container(
             height: 15,
           ),
-          GalleryView(galleryItemsLocal),
+          GalleryView(getGalleryItems(getStringList(widget.restaurant['images']))),
           Container(
             height: 50,
               child: Row(
@@ -41,13 +44,22 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
           ),
           SizedBox(height: 10,),
           Expanded(
-            child: ListView.builder(
-                itemCount: widget.restaurant.ratings == null? 0 : widget.restaurant.ratings.length,
-                itemBuilder: (BuildContext context, int index){
-                  var item = widget.restaurant.ratings[index];
-                  return ProRating(item);
-                }),
+            child: StreamBuilder(
+                stream: Firestore.instance.collection(widget.restaurant.reference.path+'/reviews').snapshots(),
+                builder: (context, snapshot) {
+                  if(!snapshot.hasData) return const Text('Loading...');
+                  return RatingComment(snapshot,isLogged: _isLogged,);
+                }
+            ),
           ),
+//          Expanded(
+//            child: ListView.builder(
+//                itemCount: widget.restaurant.ratings == null? 0 : widget.restaurant.ratings.length,
+//                itemBuilder: (BuildContext context, int index){
+//                  var item = widget.restaurant.ratings[index];
+//                  return ProRating(item);
+//                }),
+//          ),
 
         ],
       ),
@@ -95,24 +107,32 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
     }
   }
 
-  List<GalleryExampleItem> galleryItemsLocal = <GalleryExampleItem>[
-    GalleryExampleItem(
-      id: "tag1",
-      resource: "https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0RG000000i1j38MAA/59dcbda8e4b0b478a2d2c683.jpg&w=710&h=462",
-    ),
-    GalleryExampleItem(id: "tag2", resource: "https://panfleteria.sfo2.digitaloceanspaces.com/img/ofertas/Desconto-Pratos-Parque-Aquatico-ChicoCaranguejo-vr02_5.jpg"),
-    GalleryExampleItem(
-      id: "tag3",
-      resource: "https://www.idasevindasblog.com/wp-content/uploads/2017/08/DSC_1429-1170x775.jpg",
-    ),
-    GalleryExampleItem(
-      id: "tag4",
-      resource: "https://static.baratocoletivo.com.br/2019/0411/oferta_15550143112338_Destaque.jpg",
-    ),
-    GalleryExampleItem(
-      id: "tag5",
-      resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
-    ),
-  ];
+  List<String> getStringList(List<dynamic> list){
+    List<String> result = List();
+    for(dynamic item in list){
+      result.add(item as String);
+    }
+    return result;
+  }
+
+//  List<GalleryExampleItem> galleryItemsLocal = <GalleryExampleItem>[
+//    GalleryExampleItem(
+//      id: "tag1",
+//      resource: "https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0RG000000i1j38MAA/59dcbda8e4b0b478a2d2c683.jpg&w=710&h=462",
+//    ),
+//    GalleryExampleItem(id: "tag2", resource: "https://panfleteria.sfo2.digitaloceanspaces.com/img/ofertas/Desconto-Pratos-Parque-Aquatico-ChicoCaranguejo-vr02_5.jpg"),
+//    GalleryExampleItem(
+//      id: "tag3",
+//      resource: "https://www.idasevindasblog.com/wp-content/uploads/2017/08/DSC_1429-1170x775.jpg",
+//    ),
+//    GalleryExampleItem(
+//      id: "tag4",
+//      resource: "https://static.baratocoletivo.com.br/2019/0411/oferta_15550143112338_Destaque.jpg",
+//    ),
+//    GalleryExampleItem(
+//      id: "tag5",
+//      resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
+//    ),
+//  ];
 
 }

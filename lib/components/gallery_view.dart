@@ -1,6 +1,7 @@
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class GalleryView extends StatelessWidget {
   final List<GalleryExampleItem> galleryItems;
@@ -9,7 +10,17 @@ class GalleryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(2.0),
-      child: Center(
+      child: this.galleryItems.length == 0 ? Container(
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.warning),
+              Text('Nenhuma imagem'),
+            ],
+          )
+        ),
+      ) : Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -61,4 +72,17 @@ class GalleryView extends StatelessWidget {
     return GalleryExampleItem(id: '',resource: '',isSvg: false);
   }
 
+}
+
+List<GalleryExampleItem> getGalleryItems(List<String> urls){
+//  List<String> urls = widget.item.listImagesUrl;
+  List<GalleryExampleItem> items = List();
+  int index = 0;
+  for(String url in urls){
+    items.add(GalleryExampleItem(
+      id: "tag${++index}",
+      resource: url,
+    ));
+  }
+  return items;
 }

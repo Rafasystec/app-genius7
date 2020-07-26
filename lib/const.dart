@@ -13,6 +13,7 @@ const String NICK_NAME = "nickname";
 const String PHOTO_URL = "photoUrl";
 const String ABOUT_ME = 'aboutMe';
 const String RESTAURANT_PATH = 'restaurant-doc-path';
+const String USER_REF = 'user-ref';
 
 BoxDecoration btnBoxDecoration() {
   return BoxDecoration(

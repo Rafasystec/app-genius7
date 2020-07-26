@@ -8,11 +8,9 @@ import 'package:app/Objects/restaurant.dart';
 import 'package:app/Screens/digital_menu.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/const.dart';
-import 'package:app/login.dart';
 import 'package:app/restaurant/waiter_home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'build_menu_digital.dart';
@@ -106,7 +104,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
               var rate = item['rate'];
               var icon = item['icon'];
               categItens.add(CategoryItem(0, desc, detail, rate,
-                  formatCurrency(price), icon));
+                  formatCurrency(price), icon,item.reference.path));
             }
           }
           digitalMenu.categories.add(Category(0, descCateg, categItens));

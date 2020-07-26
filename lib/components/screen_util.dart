@@ -3,6 +3,7 @@
 import 'package:app/Screens/photo_view_gallery.dart';
 import 'package:app/components/image_circle.dart';
 import 'package:app/response/response_local_restaurant.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -32,17 +33,17 @@ Widget appButtonTheme(BuildContext context,String label, VoidCallback onPressedA
   );
 }
 
-Widget getItemLocalRestaurantDetail(ResponseLocalRestaurant item){
+Widget getItemLocalRestaurantDetail(DocumentSnapshot item){
   return Card(
     child: ListTile(
       leading: Container(
         height: 50,
         width: 50,
         padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: getImageFromURL(item.urlLogo),
+        child: getImageFromURL(item['avatar']),
       ),
-      title: Text(item.name),
-      subtitle: Text(item.address),
+      title: Text(item['name']),
+      subtitle: Text(item['address']),
       trailing: Container(
         height: 60,
         width: 64,
@@ -52,11 +53,11 @@ Widget getItemLocalRestaurantDetail(ResponseLocalRestaurant item){
           children: <Widget>[
             Row(
               children: <Widget>[
-                Text('${item.rate}'),
+                Text('${item['rate']}'),
                 Icon(Icons.star,color: Colors.yellowAccent,),
               ],
             ),
-            Text('${item.distance}',style: TextStyle(color: Colors.green),),
+            Text('7.4 km',style: TextStyle(color: Colors.green),),
           ],
         ),
       ),

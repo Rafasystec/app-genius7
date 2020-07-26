@@ -108,11 +108,18 @@ Widget buildItem(BuildContext context) {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          appButtonTheme(context, 'SOU CLIENTE', ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()))),
-          SizedBox(height: 10,),
-          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
-          SizedBox(height: 10,),
+          Container(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:')),
+//          appButtonTheme(context, 'SOU CLIENTE', ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()))),
+//          SizedBox(height: 10,),
+//          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
+//          SizedBox(height: 10,),
           appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode()))),
+          SizedBox(height: 10,),
+          Container(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Caso você seja dono de restaurante e quer participar do sistema , escolha a opção abaixo para se cadastrar e montar o seu menu.')),
           SizedBox(height: 10,),
           appButtonTheme(context, 'RESTAURANTE', ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreenRestaurant())))
           ],

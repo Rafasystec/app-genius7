@@ -157,12 +157,22 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
     ) ;
   }
 
-  CategoryItem categoryItemFromSnapshot(DocumentSnapshot item) => CategoryItem(0,item['desc'],item['detail'],item['rate'],formatCurrency(item['price']),item['icon']);
+  CategoryItem categoryItemFromSnapshot(DocumentSnapshot item) => CategoryItem(0,item['desc'],item['detail'],item['rate'],formatCurrency(item['price']),item['icon'],item.reference.path, listImagesUrl: getImagesFromSnapshot(item['images']));
 
   void onItemMenuPress(Choice choice) {
     if (choice.id == 0) {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenuMyOrders()));
     }
+  }
+
+  List<String> getImagesFromSnapshot(List<dynamic> list){
+    List<String> items = List();
+    if(list != null) {
+      for (dynamic element in list) {
+        items.add(element);
+      }
+    }
+    return items;
   }
 
 //  Future<List<Category> > getCategories() async{

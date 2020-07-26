@@ -7,8 +7,9 @@ class CategoryItem{
   final int rate;
   final String price;
   final String iconUrl;
+  final String ref;
   final List<String> listImagesUrl;
   final List<ResponseRating> ratings;
 
-  CategoryItem(this.id,this.description,this.shortDescription,this.rate,this.price,this.iconUrl,{this.listImagesUrl,this.ratings});
+  CategoryItem(this.id,this.description,this.shortDescription,this.rate,this.price,this.iconUrl,this.ref,{this.listImagesUrl,this.ratings});
 }

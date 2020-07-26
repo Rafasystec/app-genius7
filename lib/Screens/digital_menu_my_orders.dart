@@ -16,10 +16,10 @@ class _ScreenDigitalMenuMyOrdersState extends State<ScreenDigitalMenuMyOrders> {
 
   List<ResponseMyOrder> list = <ResponseMyOrder>[
     ResponseMyOrder(
-        CategoryItem(1,'058 - PEIXE A CANOA','peixe frito inteiro com arroz, batata frita, baião de 2 e farofa',4,'R\$ 78,50','https://media-cdn.tripadvisor.com/media/photo-s/11/07/1e/74/peixe-frito.jpg'),
+        CategoryItem(1,'058 - PEIXE A CANOA','peixe frito inteiro com arroz, batata frita, baião de 2 e farofa',4,'R\$ 78,50','https://media-cdn.tripadvisor.com/media/photo-s/11/07/1e/74/peixe-frito.jpg',''),
         DateTime(2020,7,18,11,20),Status.OPEN),
     ResponseMyOrder(
-        CategoryItem(1,'058 - PEIXE A CANOA','peixe frito inteiro com arroz, batata frita, baião de 2 e farofa',4,'R\$ 78,50','https://media-cdn.tripadvisor.com/media/photo-s/11/07/1e/74/peixe-frito.jpg'),
+        CategoryItem(1,'058 - PEIXE A CANOA','peixe frito inteiro com arroz, batata frita, baião de 2 e farofa',4,'R\$ 78,50','https://media-cdn.tripadvisor.com/media/photo-s/11/07/1e/74/peixe-frito.jpg',''),
         DateTime(2020,7,18,11,40),Status.CLOSE)
   ];
 

@@ -1,6 +1,9 @@
+import 'package:app/components/screen_util.dart';
 import 'package:app/response/response_pro.dart';
 import 'package:app/response/response_rating.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ProRating extends StatelessWidget {
   final ResponseRating _rating;
@@ -25,4 +28,11 @@ class ProRating extends StatelessWidget {
         isThreeLine: true,
     ));
   }
+}
+
+Widget buildRatingFromSnapshot(BuildContext context,DocumentSnapshot item){
+  ResponseRating rating = ResponseRating(
+        item['avatar'], item['user-name'], item['comment']);
+    return ProRating(rating);
+
 }
