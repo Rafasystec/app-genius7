@@ -56,6 +56,7 @@ dependencies:
   flutter_svg:
   map_launcher: ^0.8.1
   image_picker:
+  flutter_google_places: ^0.2.6
 
 
 dev_dependencies:

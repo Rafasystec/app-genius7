@@ -9,11 +9,20 @@ final greyColor2 = Color(0xffE8E8E8);
 
 const String ID_USER_CLI_FIREBASE = "id-user-cli-firebase";
 const String ID_USER_PRO_FIREBASE = "id-user-pro-firebase";
-const String NICK_NAME = "nickname";
-const String PHOTO_URL = "photoUrl";
-const String ABOUT_ME = 'aboutMe';
-const String RESTAURANT_PATH = 'restaurant-doc-path';
-const String USER_REF = 'user-ref';
+const String NICK_NAME            = "nickname";
+const String PHOTO_URL            = "photoUrl";
+const String ABOUT_ME             = 'aboutMe';
+const String RESTAURANT_PATH      = 'restaurant-doc-path';
+const String USER_REF             = 'user-ref';
+const String RESTAURANT_IMG_PATH  = 'photoUrl';
+
+//Constants for collections on Firebase
+const String COLLECTION_RESTAURANT= 'restaurants';
+
+//------------------------------------------
+//API KEY for google places
+//------------------------------------------
+const kGoogleApiKey = "API_KEY";
 
 BoxDecoration btnBoxDecoration() {
   return BoxDecoration(

@@ -43,7 +43,7 @@ Widget getItemLocalRestaurantDetail(DocumentSnapshot item){
         child: getImageFromURL(item['avatar']),
       ),
       title: Text(item['name']),
-      subtitle: Text(item['address']),
+      subtitle: Text(item['address'] == null ? 'Sem Endereço ainda':item['address']),
       trailing: Container(
         height: 60,
         width: 64,

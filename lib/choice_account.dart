@@ -5,6 +5,7 @@ import 'package:app/Screens/digital_menu_read_qrcode.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/home.dart';
 import 'package:app/restaurant/home.dart';
+import 'package:app/restaurant/settings.dart';
 import 'package:app/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'components/choice.dart';
 import 'main.dart';
 
@@ -24,12 +26,26 @@ class ChooseTypeAccount extends StatefulWidget {
 
 class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
   bool isLoading = false;
+  SharedPreferences prefs;
+  String refRestaurant;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   List<Choice> mainChoices = const <Choice>[
     const Choice(0,title: 'Perfil', icon: Icons.settings),
     const Choice(1,title: 'Fechar', icon: Icons.close),
     const Choice(2,title: 'Log out', icon: Icons.exit_to_app),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    readLocal();
+  }
+
+  void readLocal() async {
+    prefs = await SharedPreferences.getInstance();
+    refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +66,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
       Navigator.of(context)
           .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyApp()), (Route<dynamic> route) => false);
     }
+
 
     void onItemMenuPress(Choice choice) {
       if (choice.id == 2) {
@@ -100,30 +117,42 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
       ) ,
     );
   }
-}
-
-Widget buildItem(BuildContext context) {
+  Widget buildItem(BuildContext context) {
 
     return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:')),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:')),
 //          appButtonTheme(context, 'SOU CLIENTE', ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()))),
 //          SizedBox(height: 10,),
 //          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
 //          SizedBox(height: 10,),
-          appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode()))),
-          SizedBox(height: 10,),
-          Container(
-              padding: EdgeInsets.all(8.0),
-              child: Text('Caso você seja dono de restaurante e quer participar do sistema , escolha a opção abaixo para se cadastrar e montar o seu menu.')),
-          SizedBox(height: 10,),
-          appButtonTheme(context, 'RESTAURANTE', ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreenRestaurant())))
+            appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode()))),
+            SizedBox(height: 10,),
+            Container(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Caso você seja dono de restaurante e quer participar do sistema , escolha a opção abaixo para se cadastrar e montar o seu menu.')),
+            SizedBox(height: 10,),
+            appButtonTheme(context, 'RESTAURANTE', () {
+                if(refRestaurant != null && refRestaurant.isNotEmpty) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => HomeScreenRestaurant()));
+                }else{
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ScreenSettings()));
+                }
+              }
+            ),
           ],
-      )
-      );
+        )
+    );
 
+  }
 }
+
+
+
+
