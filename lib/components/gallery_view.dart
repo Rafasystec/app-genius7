@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class GalleryView extends StatelessWidget {
-  final List<GalleryExampleItem> galleryItems;
+  final List<GalleryItem> galleryItems;
   GalleryView(this.galleryItems);
   @override
   Widget build(BuildContext context) {
@@ -29,38 +29,7 @@ class GalleryView extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row (
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  GalleryExampleItemThumbnail(
-                    galleryExampleItem: galleryItems[0] != null ? galleryItems[0] : itemWhenNull,
-                    onTap: () {
-                      open(context, 0,galleryItems);
-                    },
-                  ),
-                  GalleryExampleItemThumbnail(
-                    galleryExampleItem: galleryItems[1] != null ? galleryItems[1] : itemWhenNull,
-                    onTap: () {
-                      open(context, 1,galleryItems);
-                    },
-                  ),
-                  GalleryExampleItemThumbnail(
-                    galleryExampleItem: galleryItems[2] != null ? galleryItems[2] : itemWhenNull,
-                    onTap: () {
-                      open(context, 2,galleryItems);
-                    },
-                  ),
-                  GalleryExampleItemThumbnail(
-                    galleryExampleItem: galleryItems[3] != null ? galleryItems[3] : itemWhenNull,
-                    onTap: () {
-                      open(context, 3,galleryItems);
-                    },
-                  ),
-                  GalleryExampleItemThumbnail(
-                    galleryExampleItem: galleryItems[4] != null ? galleryItems[4] : itemWhenNull,
-                    onTap: () {
-                      open(context, 4,galleryItems);
-                    },
-                  ),
-                ],
+                children: _buildGalleryList(context, galleryItems)
               ),
             ),
           ],
@@ -68,21 +37,37 @@ class GalleryView extends StatelessWidget {
       ),
     );
   }
-  GalleryExampleItem itemWhenNull(){
-    return GalleryExampleItem(id: '',resource: '',isSvg: false);
+  GalleryItem itemWhenNull(){
+    return GalleryItem(0,id: '',resource: '',isSvg: false);
   }
 
 }
 
-List<GalleryExampleItem> getGalleryItems(List<String> urls){
-//  List<String> urls = widget.item.listImagesUrl;
-  List<GalleryExampleItem> items = List();
+List<GalleryItem> getGalleryItems(List<String> urls){
+  List<GalleryItem> items = List();
   int index = 0;
   for(String url in urls){
-    items.add(GalleryExampleItem(
+    items.add(GalleryItem(
+      index,
       id: "tag${++index}",
       resource: url,
     ));
   }
   return items;
+}
+
+List<Widget> _buildGalleryList(BuildContext context, List<GalleryItem>  items) {
+  List<Widget> lines = []; // this will hold Rows according to available lines
+  int index = 0;
+  for (var item in items) {
+    ++index;
+    lines.add(GalleryExampleItemThumbnail(
+          galleryExampleItem: item != null ? item : GalleryItem(0,id: '',resource: '',isSvg: false),
+          onTap: () {
+            open(context, item.index,items);
+          },
+      ),
+    );
+  }
+  return lines;
 }

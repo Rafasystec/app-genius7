@@ -32,7 +32,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
 
   void readLocal() async {
     prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString(ID_USER_CLI_FIREBASE);
+    userId = prefs.getString(USER_REF);
     restaurantDoc = prefs.getString(RESTAURANT_PATH);
   }
   @override

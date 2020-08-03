@@ -1,0 +1,21 @@
+{
+  "text1": "Olá",
+  "text2": "Mundo",
+  "your_address": "SEU ENDEREÇO",
+  "gallery": "galeria",
+  "camera": "camera",
+  "remove_all_images": "Remover Imagens",
+  "restaurant_name": "Nome do restaurante",
+  "lang_country_code": "br",
+  "place_country_code": "br",
+  "you_can_just_add": "Você só pode adicionar",
+  "images": "imagens",
+  "inform_the_address": "Informe o endereço por favor",
+  "inform_the_restaurant_name": "Por favor informe o nome do restaurante!",
+  "add_at_least": "Por favor adicione pelo menos 3 imagens do seu restaurante",
+  "save_success": "Salvo com sucesso!",
+  "save": "salvar",
+  "add_main_image": "Please add the main image",
+  "explain_delete_image": "Na versão gratuita não é permitido excluir uma imagem especifica ou troca-la. Para isso você deve excluir todas as fotas e inseri-las novamente.",
+  "free_cant_del_each_file": "Na versão gratuita não é possível excluir uma única imagem e colocar outra, é necessário a exclusão de todos os itens."
+}

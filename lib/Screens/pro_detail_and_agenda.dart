@@ -21,7 +21,7 @@ class ScreenProDetailAgenda extends StatelessWidget{
     String idClientFirebase;
     Future<String> readLocal() async {
       prefs = await SharedPreferences.getInstance();
-      idClientFirebase = prefs.getString(ID_USER_CLI_FIREBASE) ?? '';
+      idClientFirebase = prefs.getString(USER_REF) ?? '';
       return idClientFirebase;
     }
     return

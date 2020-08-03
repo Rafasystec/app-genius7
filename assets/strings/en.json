@@ -1,0 +1,21 @@
+{
+  "text1": "Hello",
+  "text2": "World",
+  "your_address": "YOUR ADDRESS",
+  "gallery": "gallery",
+  "camera": "camera",
+  "remove_all_images": "Remove all images",
+  "restaurant_name": "Restaurant Name",
+  "lang_country_code": "en",
+  "place_country_code": "us",
+  "you_can_just_add": "You can just add",
+  "images": "images",
+  "inform_the_address": "Please inform the address",
+  "inform_the_restaurant_name": "Please inform your restaurant name",
+  "add_at_least": "Please add at least 3 images of your restaurant",
+  "save_success": "Saved successfully!",
+  "save": "save",
+  "add_main_image": "Please add the main image",
+  "explain_delete_image": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items.",
+  "free_cant_del_each_file": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items."
+}

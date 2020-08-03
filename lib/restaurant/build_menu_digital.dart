@@ -37,36 +37,17 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
 
   File _image;
   final picker = ImagePicker();
-  List<GalleryExampleItem> _galleryItems  = new List(5);
-  GalleryExampleItem _mainImageItem;
+  List<GalleryItem> _galleryItems  = new List(5);
+  GalleryItem _mainImageItem;
 
 
-  List<GalleryExampleItem> loadImagesFromStorage(List<String>urls){
-    List<GalleryExampleItem> gallery =  List();
+  List<GalleryItem> loadImagesFromStorage(List<String>urls){
+    List<GalleryItem> gallery =  List();
     int index = 0;
     for(String url in urls){
-        GalleryExampleItem( id:(index++).toString(),resource: url,isSvg: false);
+        GalleryItem(index, id:(index++).toString(),resource: url,isSvg: false);
       }
       return gallery;
-//    return   <GalleryExampleItem>[
-//  GalleryExampleItem(
-//  id: "tag1",
-//  resource: "https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0RG000000i1j38MAA/59dcbda8e4b0b478a2d2c683.jpg&w=710&h=462",
-//  ),
-//  GalleryExampleItem(id: "tag2", resource: "https://panfleteria.sfo2.digitaloceanspaces.com/img/ofertas/Desconto-Pratos-Parque-Aquatico-ChicoCaranguejo-vr02_5.jpg"),
-//  GalleryExampleItem(
-//  id: "tag3",
-//  resource: "https://www.idasevindasblog.com/wp-content/uploads/2017/08/DSC_1429-1170x775.jpg",
-//  ),
-//  GalleryExampleItem(
-//  id: "tag4",
-//  resource: "https://static.baratocoletivo.com.br/2019/0411/oferta_15550143112338_Destaque.jpg",
-//  ),
-//  GalleryExampleItem(
-//  id: "tag5",
-//  resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
-//  ),
-//  ];
   }
   @override
   void initState() {
@@ -76,9 +57,10 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     //TODO See it later
     _galleryItems = loadImagesFromStorage(null);
     //TODO get this from database or rest api
-    _mainImageItem = GalleryExampleItem(
+    _mainImageItem = GalleryItem(0,
       id: "tagMain",
       resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
+
     );
 
     super.initState();
@@ -162,7 +144,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                                 child: GalleryExampleItemThumbnail(
                                   galleryExampleItem: _mainImageItem,
                                   onTap: () {
-                                    open(context, 0,<GalleryExampleItem>[_mainImageItem]);
+                                    open(context, 0,<GalleryItem>[_mainImageItem]);
                                   },
                                 ),
                               ),
@@ -204,10 +186,6 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
               SizedBox(
                 height: 200,
                 child:
-//                StreamBuilder(
-//                  stream: Firestore.instance.collection("restaurant").document("IHwVo5efFvYETtQuleCF").snapshots(),
-//                  builder: (context, snapshot){
-//                    if(!snapshot.hasData) return const Text('Loading...');
                     ListView.builder(
                     itemCount: categories.length,
                     itemBuilder: (BuildContext context, int index){
@@ -243,10 +221,6 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                         ),
                       );
                     }),
-//                  },
-//                )
-                
-
               )
             ]
           ),

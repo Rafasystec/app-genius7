@@ -7,8 +7,8 @@ final primaryColor = Color(0xff203152);
 final greyColor = Color(0xffaeaeae);
 final greyColor2 = Color(0xffE8E8E8);
 
-const String ID_USER_CLI_FIREBASE = "id-user-cli-firebase";
-const String ID_USER_PRO_FIREBASE = "id-user-pro-firebase";
+//const String ID_USER_CLI_FIREBASE = "id-user-cli-firebase";
+//const String ID_USER_PRO_FIREBASE = "id-user-pro-firebase";
 const String NICK_NAME            = "nickname";
 const String PHOTO_URL            = "photoUrl";
 const String ABOUT_ME             = 'aboutMe';
@@ -22,7 +22,7 @@ const String COLLECTION_RESTAURANT= 'restaurants';
 //------------------------------------------
 //API KEY for google places
 //------------------------------------------
-const kGoogleApiKey = "API_KEY";
+const kGoogleApiKey = "AIzaSyDkZ2v9YBayX6ofccseKHzOzm6Z5YVYM4Q";
 
 BoxDecoration btnBoxDecoration() {
   return BoxDecoration(

@@ -1,8 +1,6 @@
 
-
 import 'package:app/Screens/photo_view_gallery.dart';
 import 'package:app/components/image_circle.dart';
-import 'package:app/response/response_local_restaurant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,7 @@ import 'package:intl/intl.dart';
 import '../const.dart';
 import 'gallery_example_item.dart';
 
-Widget appButtonTheme(BuildContext context,String label, VoidCallback onPressedAction,{double minWidth = 220.0,double height = 70.0} ){
+Widget appButtonTheme(BuildContext context,String label, VoidCallback onPressedAction,{double minWidth = 220.0,double height = 70.0, Icon icon} ){
   return ButtonTheme(
     minWidth: minWidth,
     height: height,
@@ -21,9 +19,20 @@ Widget appButtonTheme(BuildContext context,String label, VoidCallback onPressedA
           side: BorderSide(color: Colors.red),
         ),
         onPressed: onPressedAction,
-        child: Text(
-          label,
-          style: TextStyle(fontSize: 16.0),
+        child: Container(
+          width: minWidth,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Visibility(
+                  visible: icon != null,
+                  child: icon != null ? icon : Icon(Icons.warning)),
+              Text(
+                label.toUpperCase(),
+                style: TextStyle(fontSize: 16.0),
+              ),
+            ],
+          ),
         ),
         color: Color(0xffdd4b39),
         highlightColor: Color(0xffff7f7f),
@@ -65,7 +74,7 @@ Widget getItemLocalRestaurantDetail(DocumentSnapshot item){
   );
 }
 
-void open(BuildContext context, final int index, List<GalleryExampleItem> galleryItems) {
+void open(BuildContext context, final int index, List<GalleryItem> galleryItems) {
   Navigator.push(
     context,
     MaterialPageRoute(

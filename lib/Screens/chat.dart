@@ -98,7 +98,7 @@ class ChatScreenState extends State<ChatScreen> {
 
   readLocal() async {
     prefs = await SharedPreferences.getInstance();
-    id = prefs.getString(ID_USER_CLI_FIREBASE) ?? '';
+    id = prefs.getString(USER_REF) ?? '';
     /*
     Notice that when user A (current user) chat with user B (peer user),
     the problem is which groupChatId we’ll use to read and write data chat
