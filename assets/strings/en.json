@@ -16,6 +16,13 @@
   "save_success": "Saved successfully!",
   "save": "save",
   "add_main_image": "Please add the main image",
+  "restaurant": "restaurant",
+  "my_digital_menu": "my digital menu",
+  "categories": "categories",
+  "category_name": "Category name",
+  "category_saved": "Category saved",
+  "saved": "Saved",
+  "are_you_a_restaurant": "If you are a restaurant owner and want to participate in the system, choose the option below to register and set up your menu.",
   "explain_delete_image": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items.",
   "free_cant_del_each_file": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items."
 }

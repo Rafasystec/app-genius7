@@ -7,6 +7,7 @@ import 'package:app/home.dart';
 import 'package:app/restaurant/home.dart';
 import 'package:app/restaurant/settings.dart';
 import 'package:app/settings.dart';
+import 'package:app/util/app_locations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -134,15 +135,21 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
             SizedBox(height: 10,),
             Container(
                 padding: EdgeInsets.all(8.0),
-                child: Text('Caso você seja dono de restaurante e quer participar do sistema , escolha a opção abaixo para se cadastrar e montar o seu menu.')),
+                child: Text(AppLocalizations.of(context).translate('are_you_a_restaurant'))),
             SizedBox(height: 10,),
-            appButtonTheme(context, 'RESTAURANTE', () {
+            appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () {
                 if(refRestaurant != null && refRestaurant.isNotEmpty) {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => HomeScreenRestaurant()));
                 }else{
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ScreenSettings()));
+                      builder: (context) => ScreenSettings())).then((value){
+                    readLocal();
+                    if(refRestaurant != null && refRestaurant.isNotEmpty) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HomeScreenRestaurant()));
+                    }
+                  });
                 }
               }
             ),

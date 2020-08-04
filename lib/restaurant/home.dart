@@ -8,7 +8,9 @@ import 'package:app/Objects/restaurant.dart';
 import 'package:app/Screens/digital_menu.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/const.dart';
+import 'package:app/restaurant/categories.dart';
 import 'package:app/restaurant/waiter_home.dart';
+import 'package:app/util/app_locations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,15 +41,15 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Restaurante'),
+        title: Text(AppLocalizations.of(context).translate('restaurant')),
       ),
       body: Center(
         child: Container(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
-                1,0
+              appButtonTheme(context, AppLocalizations.of(context).translate('my_digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
+                1,0,'refRestaurant'
               ))))),
               SizedBox(height: 10,),
               appButtonTheme(context, 'EDITAR MENU DIGITAL', (){
@@ -67,8 +69,11 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
 //      //TODO call login page
 //      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
 //    }else{
-        Restaurant restaurant = await getRestaurantFromFirebase(restaurantDoc);
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(restaurant)));
+//        Restaurant restaurant = await getRestaurantFromFirebase(restaurantDoc);
+//        Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(restaurant)));
+        var options = DigitalMenuOptions(1, 2,restaurantDoc,isEditMode: true);
+        Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => ScreenDigitalMenu(options)));
 //      }
 
 //    }
@@ -110,7 +115,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
           digitalMenu.categories.add(Category(0, descCateg, categItens));
         }
       }
-      Restaurant restaurant = Restaurant(id, ref, active,
+      Restaurant restaurant = Restaurant(0, ref, active,
           Point(documents[0]['lat'], documents[0]['long']),
           digitalMenu);
       return restaurant;

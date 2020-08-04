@@ -80,11 +80,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   }
 
   void handleSaveData() {
-
     if(!validation()){
       return;
     }
-
     setState(() {
       isLoading = true;
     });
@@ -155,7 +153,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
           Firestore.instance
               .collection(COLLECTION_RESTAURANT)
               .document(refRestaurant)
-              .updateData({'avatar': photoUrl}).then((data) async {
+              .updateData({'avatar': photoUrl,
+                           'id': refRestaurant}).then((data) async {
             await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
             setState(() {
               isLoading = false;

@@ -5,40 +5,45 @@ import 'package:app/Objects/restaurant.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/restaurant/categories.dart';
+import 'package:app/util/app_locations.dart';
+import 'package:app/util/file_util.dart';
+import 'package:app/util/global_param.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../const.dart';
 
 class BuildDigitalMenuScreen extends StatefulWidget {
-  final Restaurant _restaurant;
-  BuildDigitalMenuScreen(this._restaurant);
+//  final Restaurant _restaurant;
+//  BuildDigitalMenuScreen(this._restaurant);
+  final String refRestaurant,refCategory;
+  BuildDigitalMenuScreen(this.refRestaurant,this.refCategory);
   @override
   _BuildDigitalMenuScreenState createState() => _BuildDigitalMenuScreenState();
 }
 
 class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a GlobalKey<FormState>,
-  // not a GlobalKey<MyCustomFormState>.
+
+  String description, detail,photoUrl;
+  int rate = 0;
+  double price = 0.0;
+
   final _formKey = GlobalKey<FormState>();
-
-//  List _cities =
-//  ["Principal", "Entradas", "Bebidas Geladas", "Sobremesas", "Bebidas Quentes"];
-  List<Category> categories;
-
-  List<DropdownMenuItem<String>> _dropDownMenuItems;
-  String _currentCity;
-
-  File _image;
+  ImagePicker _picker;
+  bool isLoading,isLoggedIn, showRemoveAll = false;
+  List<String> urls = List();
+  List<File> files = List();
+  File avatarImageFile;
   final picker = ImagePicker();
   List<GalleryItem> _galleryItems  = new List(5);
   GalleryItem _mainImageItem;
+  String refItem;
 
 
   List<GalleryItem> loadImagesFromStorage(List<String>urls){
@@ -51,44 +56,23 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   }
   @override
   void initState() {
-    categories = widget._restaurant.menu.categories;
-    _dropDownMenuItems = getDropDownMenuItems();
-    _currentCity = _dropDownMenuItems[0].value;
+
     //TODO See it later
-    _galleryItems = loadImagesFromStorage(null);
+    _galleryItems = loadImagesFromStorage(List());
     //TODO get this from database or rest api
     _mainImageItem = GalleryItem(0,
       id: "tagMain",
       resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
 
     );
-
+    _picker = ImagePicker();
     super.initState();
   }
   ///When we need to get image
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
-
     setState(() {
-      _image = File(pickedFile.path);
-    });
-  }
-
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (Category category in categories) {
-      items.add(new DropdownMenuItem(
-          value: category.id.toString(),
-          child: new Text(category.description)
-      ));
-    }
-    return items;
-  }
-
-
-  void changedDropDownItem(String selectedCity) {
-    setState(() {
-      _currentCity = selectedCity;
+      avatarImageFile = File(pickedFile.path);
     });
   }
 
@@ -97,6 +81,14 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Montar ou alterar Menu'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(AppLocalizations.of(context).translate('save')),
+            onPressed: () async {
+              handleSaveData();
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: SizedBox(
@@ -118,22 +110,6 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                SizedBox(height: 15,),
-                                Text("Escolha a categoria do Item ", style: TextStyle(fontSize: 16),),
-                                Container(
-                                  padding: new EdgeInsets.all(8.0),
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    DropdownButton(
-                                      value: _currentCity,
-                                      items: _dropDownMenuItems,
-                                      onChanged: changedDropDownItem,
-                                    ),
-                                    appButtonTheme(context, '+', ()=>Fluttertoast.showToast(msg: 'The deal is open a popup to put the description'),height: 20, minWidth: 60),
-                                  ],
-                                )
                               ],
                             ),
                             SizedBox(height: 15,),
@@ -150,29 +126,30 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                               ),
                             ),
                             SizedBox(height: 10,),
-                            appButtonTheme(context, 'ADD IMAGEM PRINCIPAL', getImage,height: 25,minWidth: 60),
+                            appButtonTheme(context, 'ADD IMAGEM PRINCIPAL', ()=>addImageGalleryOrCamera(false,null,0),height: 25,),
                             GalleryView(_galleryItems),
-                            appButtonTheme(context, 'ADICIONAR IMAGEMS', getImage,height: 30,minWidth: 60),
+                            appButtonTheme(context, 'ADICIONAR IMAGEMS', ()=>addImageGalleryOrCamera(false,_galleryItems,5),height: 30,),
                             formFieldText('Nome do prato', (value) {
                               if (value.isEmpty) {
                                 return 'Por favor informar o nome do prato';
                               }
+                              description = value;
+                              return null;
+                            },),
+                            formFieldText('Detalhe', (value) {
+                              if (value.isEmpty) {
+                                return 'Por favor informar o detalhe0';
+                              }
+                              description = value;
                               return null;
                             },),
                             formFieldText('Valor Ex: 55.40',(value) {
                               if (value.isEmpty) {
                                 return 'Please enter some text right here';
                               }
+                              price = value as double;
                               return null;
                             }),
-
-                            SizedBox(height: 10,),
-                            appButtonTheme(context, 'ADICIONAR ITEM', ()=>
-                            {
-                              if(_formKey.currentState.validate()){
-                                Fluttertoast.showToast(msg: 'Item adicionado')
-                              }
-                            },height: 30),
 
                           ],
                         ),
@@ -182,50 +159,184 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
 
                 ],
               ),
-              Text('Minhas categorias'),
-              SizedBox(
-                height: 200,
-                child:
-                    ListView.builder(
-                    itemCount: categories.length,
-                    itemBuilder: (BuildContext context, int index){
-                      var item = categories[index];
-                      return Container(
-                        height: 50,
-                        child: Card(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(item.description),
-                              Row(
-                                children: <Widget>[
-                                  FlatButton(
-                                    onPressed: (){
-                                      Fluttertoast.showToast(msg: 'Edit item $item');
-                                    },
-                                    padding: EdgeInsets.all(0),
-                                    child: Icon(Icons.edit),
-                                  ),
-                                  FlatButton(
-                                    onPressed: (){
-                                      Fluttertoast.showToast(msg: 'Categoria:  $item foi excluida');
-                                    },
-                                    padding: EdgeInsets.all(0),
-                                    child: Icon(Icons.delete),
-                                  )
-                                ],
-                              ),
-
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-              )
             ]
           ),
         ),
       ),
     );
+  }
+
+  Future addImageGalleryOrCamera(bool fromCamera, List<GalleryItem> galleryItems,int maxImages) async {
+    if(galleryItems != null) {
+      if (galleryItems.length >= maxImages) {
+        Fluttertoast.showToast(msg: '${AppLocalizations.of(context).translate('you_can_just_add')} ${GlobalParameters.maxImageAmount} ${AppLocalizations.of(context).translate('images')}');
+        return;
+      }
+    }
+    PickedFile pickerFile ;
+    if(fromCamera) {
+      pickerFile = await _picker.getImage(source: ImageSource.camera);
+    }else{
+      pickerFile = await _picker.getImage(source: ImageSource.gallery);
+    }
+    if (pickerFile != null) {
+      File croppedFile = await getCompressedCropImage(pickerFile);
+      if(galleryItems != null ) {
+        setState(() {
+          showRemoveAll = true;
+          files.add(croppedFile);
+          galleryItems.add(GalleryItem(
+            galleryItems.length, id: galleryItems.length.toString(),
+            resource: croppedFile.path,
+            isSvg: false,
+            isLocal: true,));
+          isLoading = true;
+        });
+      }else{
+        setState(() {
+          avatarImageFile = croppedFile;
+        });
+      }
+    }
+  }
+
+  void handleSaveData() {
+//    if(!validation()){
+//      return;
+//    }
+    setState(() {
+      isLoading = true;
+    });
+    Firestore.instance
+        .collection('restaurants/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
+        .add({'desc': description, 'detail': detail, 'rate': rate,'price':price}).then((data) async {
+      //refRestaurant = data.documentID;
+      //await prefs.setString(RESTAURANT_PATH, refRestaurant);
+      refItem = data.documentID;
+      uploadFile();
+      uploadGallery();
+      setState(() {
+        isLoading = false;
+      });
+
+      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('save_success'));
+    }).catchError((err) {
+      setState(() {
+        isLoading = false;
+      });
+
+      Fluttertoast.showToast(msg: err.toString());
+    });
+  }
+
+  Future uploadFile() async {
+    String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/main.jpg';
+    StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+    StorageUploadTask uploadTask = reference.putFile(avatarImageFile);
+    StorageTaskSnapshot storageTaskSnapshot;
+    uploadTask.onComplete.then((value) {
+      if (value.error == null) {
+        storageTaskSnapshot = value;
+        storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
+          photoUrl = downloadUrl;
+          Firestore.instance
+              .collection('$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
+              .document(refItem)
+              .updateData({'icon': photoUrl,
+            'id': refItem}).then((data) async {
+            //await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
+            setState(() {
+              isLoading = false;
+            });
+            Fluttertoast.showToast(msg: "Upload success");
+          }).catchError((err) {
+            setState(() {
+              isLoading = false;
+            });
+            Fluttertoast.showToast(msg: err.toString());
+          });
+        }, onError: (err) {
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(msg: 'This file is not an image');
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: 'This file is not an image');
+      }
+    }, onError: (err) {
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: err.toString());
+    });
+  }
+
+  Future uploadGallery() async {
+
+    bool hasError = false;
+    bool isComplete = false;
+    int index = 0;
+    Fluttertoast.showToast(msg: 'Uploading files ...');
+    for(File file in files ){
+      String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
+      StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+      StorageUploadTask uploadTask = reference.putFile(file);
+      StorageTaskSnapshot storageTaskSnapshot;
+      uploadTask.onComplete.then((value) {
+        if (value.error == null) {
+          storageTaskSnapshot = value;
+          storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
+            String url = downloadUrl;
+            Fluttertoast.showToast(msg: 'image $index uploaded!');
+            setState(() {
+              urls.add(url);
+            });
+            if(urls.length == files.length){
+              setState(() {
+                isComplete = true;
+                isLoading = false;
+                if (!hasError) {
+                  Firestore.instance
+                      .collection('$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
+                      .document(refItem)
+                      .updateData({'images': urls}).then((data) async {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    Fluttertoast.showToast(msg: "Upload success");
+                  }).catchError((err) {
+                    setState(() {
+                      isLoading = true;
+                    });
+                    Fluttertoast.showToast(msg: err.toString());
+                  });
+                }
+              });
+            }
+          }, onError: (err) {
+            setState(() {
+              isLoading = false;
+            });
+            Fluttertoast.showToast(msg: 'This file is not an image');
+          });
+        } else {
+          hasError =true;
+          setState(() {
+            isLoading = false;
+          });
+          Fluttertoast.showToast(msg: 'This file is not an image');
+        }
+      }, onError: (err) {
+        hasError = true;
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: err.toString());
+      });
+    }
   }
 }

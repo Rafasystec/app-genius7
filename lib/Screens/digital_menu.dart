@@ -4,14 +4,18 @@ import 'package:app/Objects/digital_menu_options.dart';
 import 'package:app/Screens/digital_menu_item.dart';
 import 'package:app/Screens/digital_menu_my_orders.dart';
 import 'package:app/components/choice.dart';
+import 'package:app/components/dialog_with_field.dart';
 import 'package:app/components/digital_menu_item.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/components/scroll_parent.dart';
 import 'package:app/response/response_rating.dart';
+import 'package:app/restaurant/build_menu_digital.dart';
+import 'package:app/util/app_locations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../const.dart';
 
@@ -25,6 +29,7 @@ class ScreenDigitalMenu extends StatefulWidget {
 
 class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
   ScrollController _controller;
+  String category;
   List<Choice> menuChoices = const <Choice>[
     const Choice(0,title: 'Pedidos', icon: Icons.bookmark_border),
 //    const Choice(1,title: 'Fechar', icon: Icons.close),
@@ -104,38 +109,73 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
           ),
         ],
       ),
+      floatingActionButton: Visibility(
+        visible: widget.options.isEditMode,
+        child: FloatingActionButton(
+          onPressed: () async{
+            category = await onGetCategoryName();
+            print('save category: $category');
+            Firestore.instance.collection('restaurants/${widget.options.refRestaurant}/menu').add({
+              'desc': category }).then((value){
+              if(value != null){
+                Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('saved'));
+                print('Document ID: ${value.documentID}');
+              }
+            });
+          },
+          child: Icon(Icons.add,color: Colors.black,),
+          backgroundColor: Color(0xfff5a623),
+        ),
+      ),
       body:  StreamBuilder(
-        stream: Firestore.instance.collection('restaurants/IHwVo5efFvYETtQuleCF/menu').snapshots(),
+        stream: Firestore.instance.collection('restaurants/${widget.options.refRestaurant}/menu').snapshots(),
         builder: (context, snapshot) {
           if(!snapshot.hasData) return const Text('Loading...');
-          return ListView.builder(
-            padding: const EdgeInsets.all(2),
-            controller: _controller,
-            itemCount: snapshot.data.documents.length,
-            itemBuilder: (BuildContext context, int index) {
-              DocumentSnapshot item = snapshot.data.documents[index];
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
-                  Container(
-                    height: 250,
-                    child: StreamBuilder(
-                      stream: item.reference.collection("itens").snapshots(),
-                      builder: (context, snapshot) {
-                        if(!snapshot.hasData) return const Text('Loading...');
-                        return listCategoryItem(snapshot.data.documents);
-                      }
-                    ),
-                  ),
-
-                ],
-              );
-            }
-          );
+          return buildListView(snapshot);
         }
       ),
     );
+  }
+
+  Widget buildListView(AsyncSnapshot snapshot) {
+    return snapshot.data.documents.length > 0 ? ListView.builder(
+          padding: const EdgeInsets.all(2),
+          controller: _controller,
+          itemCount: snapshot.data.documents.length,
+          itemBuilder: (BuildContext context, int index) {
+            DocumentSnapshot item = snapshot.data.documents[index];
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
+                Container(
+                  height: 250,
+                  child: StreamBuilder(
+                    stream: item.reference.collection("itens").snapshots(),
+                    builder: (context, snapshot) {
+                      if(!snapshot.hasData) return const Text('Loading...');
+                      return (snapshot.data.documents.length > 0  ? listCategoryItem(snapshot.data.documents)
+                      : buildContainerToAddItem(context,item));
+                    }
+                  ),
+                ),
+              ],
+            );
+          }
+        ) : Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(child: Text('Nenhuma categoria ainda')),
+        );
+  }
+
+  Widget buildContainerToAddItem(BuildContext context, DocumentSnapshot category) {
+    return widget.options.isEditMode ? Container(
+      height: 50.0,
+        child: appButtonTheme(context,'Add the first item \n for ${category['desc']}?',(){
+          Fluttertoast.showToast(msg: 'Call old screem to save item');
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,category.documentID)));
+        },height: 50.0),
+      ) : SizedBox(height: 5,);
   }
 
   Widget listCategoryItem(List<DocumentSnapshot> docs){
@@ -173,6 +213,11 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
       }
     }
     return items;
+  }
+
+  Future<String> onGetCategoryName() {
+    var value = openDialogField(context,title: AppLocalizations.of(context).translate('category_name'));
+    return Future.value(value);
   }
 
 //  Future<List<Category> > getCategories() async{
