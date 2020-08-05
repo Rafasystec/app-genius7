@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 Widget getItemDetail(CategoryItem item){
   return Container(
-    height: 80,
+    height: 100,
     child: Card(
       child: ListTile(
         leading: Container(

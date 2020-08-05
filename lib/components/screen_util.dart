@@ -109,7 +109,12 @@ Widget formField(BuildContext context, TextEditingController controller,ValueCha
   );
 }
 
-Widget formFieldText(String hint,FormFieldValidator<String> validator){
+Widget formFieldText(String hint,
+    FormFieldValidator<String> validator,
+    {ValueChanged<String> onChanged,
+      TextEditingController controller,
+      TextInputType keyboardType = TextInputType.text,
+      int maxLength = 150}){
   return Container(
     child: TextFormField(
       decoration: InputDecoration(
@@ -118,6 +123,11 @@ Widget formFieldText(String hint,FormFieldValidator<String> validator){
         hintStyle: TextStyle(color: greyColor),
       ),
       validator: validator,
+      onChanged: onChanged,
+      controller: controller,
+      maxLines: null,
+      maxLength: maxLength,
+      keyboardType: keyboardType,
     ),
     margin: EdgeInsets.only(left: 18.0, right: 18.0)
   );
@@ -125,5 +135,21 @@ Widget formFieldText(String hint,FormFieldValidator<String> validator){
 
 String formatCurrency(num value){
   return  'R\$ ${NumberFormat("#,##0.00", "pt_BR").format(value)}';
+}
+
+showAlertDialog(BuildContext context){
+  AlertDialog alert=AlertDialog(
+    content: new Row(
+      children: [
+        CircularProgressIndicator(),
+        Container(margin: EdgeInsets.only(left: 5),child:Text("Loading" )),
+      ],),
+  );
+  showDialog(barrierDismissible: false,
+    context:context,
+    builder:(BuildContext context){
+      return alert;
+    },
+  );
 }
 

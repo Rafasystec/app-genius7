@@ -6,7 +6,6 @@ import 'package:app/components/screen_util.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
 import 'package:app/util/global_param.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -318,65 +317,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
     }
   }
 
-  Widget getMainPhotoContainer(){
-    return Container(
-      child: Center(
-        child: Stack(
-          children: <Widget>[
-            (avatarImageFile == null)
-                ? ( photoUrl != null && photoUrl != ''
-                ? Material(
-              child: CachedNetworkImage(
-                placeholder: (context, url) => Container(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.0,
-                    valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                  ),
-                  width: 90.0,
-                  height: 90.0,
-                  padding: EdgeInsets.all(20.0),
-                ),
-                imageUrl: photoUrl,
-                width: 90.0,
-                height: 90.0,
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(45.0)),
-              clipBehavior: Clip.hardEdge,
-            )
-                : Icon(
-              Icons.account_circle,
-              size: 90.0,
-              color: greyColor,
-            ))
-                : Material(
-              child: Image.file(
-                avatarImageFile,
-                width: 90.0,
-                height: 90.0,
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.all(Radius.circular(45.0)),
-              clipBehavior: Clip.hardEdge,
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.camera_alt,
-                color: primaryColor.withOpacity(0.5),
-              ),
-              onPressed: ()=>addImageGalleryOrCamera(false,null,0),
-              padding: EdgeInsets.all(30.0),
-              splashColor: Colors.transparent,
-              highlightColor: greyColor,
-              iconSize: 30.0,
-            ),
-          ],
-        ),
-      ),
-      width: double.infinity,
-      margin: EdgeInsets.all(20.0),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -397,7 +338,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
           SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                getMainPhotoContainer(),
+                getMainPhotoContainer(avatarImageFile,photoUrl,()=>addImageGalleryOrCamera(false,null,0)),
                 formField(context, controllerRestaurantName, (value){
                     name = value;
                 }, AppLocalizations.of(context).translate('restaurant_name'), null),

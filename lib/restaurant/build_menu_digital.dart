@@ -1,11 +1,10 @@
 import 'dart:io';
 
-import 'package:app/Objects/category.dart';
-import 'package:app/Objects/restaurant.dart';
+import 'package:app/components/dialog.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/screen_util.dart';
-import 'package:app/restaurant/categories.dart';
+import 'package:app/response/response_menu_item.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
 import 'package:app/util/global_param.dart';
@@ -23,7 +22,9 @@ class BuildDigitalMenuScreen extends StatefulWidget {
 //  final Restaurant _restaurant;
 //  BuildDigitalMenuScreen(this._restaurant);
   final String refRestaurant,refCategory;
-  BuildDigitalMenuScreen(this.refRestaurant,this.refCategory);
+  final bool isEdit;
+  final ResponseMenuItem item;
+  BuildDigitalMenuScreen(this.refRestaurant,this.refCategory,{this.isEdit = false,this.item});
   @override
   _BuildDigitalMenuScreenState createState() => _BuildDigitalMenuScreenState();
 }
@@ -33,15 +34,17 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   String description, detail,photoUrl;
   int rate = 0;
   double price = 0.0;
-
+  TextEditingController edtDescriptionController;
+  TextEditingController edtDetailController;
+  TextEditingController edtPriceController;
   final _formKey = GlobalKey<FormState>();
   ImagePicker _picker;
-  bool isLoading,isLoggedIn, showRemoveAll = false;
-  List<String> urls = List();
+  bool isLoading = false,isLoggedIn = false, showRemoveAll = false;
+  List<String> urls = List(), urlsFromDB = List();
   List<File> files = List();
   File avatarImageFile;
   final picker = ImagePicker();
-  List<GalleryItem> _galleryItems  = new List(5);
+  List<GalleryItem> _galleryItems  = new List();
   GalleryItem _mainImageItem;
   String refItem;
 
@@ -56,16 +59,20 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   }
   @override
   void initState() {
-
-    //TODO See it later
-    _galleryItems = loadImagesFromStorage(List());
-    //TODO get this from database or rest api
-    _mainImageItem = GalleryItem(0,
-      id: "tagMain",
-      resource: "https://fortalezatour.com.br/images/servicos/cc5.jpg",
-
-    );
+    if(widget.isEdit) {
+      urlsFromDB = widget.item.urls;
+      _galleryItems = getGalleryItems(urlsFromDB);
+      photoUrl      = widget.item.icon;
+      edtDetailController       = TextEditingController(text: widget.item.detail);
+      edtDescriptionController  = TextEditingController(text: widget.item.description);
+      edtPriceController        = TextEditingController(text: widget.item.price.toString());
+    }else{
+      edtDetailController       = TextEditingController();
+      edtDescriptionController  = TextEditingController();
+      edtPriceController        = TextEditingController();
+    }
     _picker = ImagePicker();
+    print('Description: ${edtDescriptionController.text}');
     super.initState();
   }
   ///When we need to get image
@@ -73,6 +80,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     setState(() {
       avatarImageFile = File(pickedFile.path);
+      _mainImageItem = GalleryItem(0,id: 'tagMain',isLocal: true,resource: pickedFile.path);
     });
   }
 
@@ -80,90 +88,128 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Montar ou alterar Menu'),
+        title: Text(AppLocalizations.of(context).translate('menu_item').toUpperCase()),
         actions: <Widget>[
           FlatButton(
             child: Text(AppLocalizations.of(context).translate('save')),
             onPressed: () async {
-              handleSaveData();
+              if(!isLoading) {
+                setState(() {
+                  isLoading = true;
+                });
+                handleSaveData();
+              }else{
+                Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('please_wait'));
+              }
             },
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: 900,
-          child: Column(
-            children : <Widget>[
-              Column(
-                children: <Widget>[
-                  Container(
-                    height: 660,
-                    child: Form(
-                      key: _formKey,
-                      child: SizedBox(
-                        height: 660,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                              ],
-                            ),
-                            SizedBox(height: 15,),
-                            Center(
-                              child: Container(
-                                height: 150,
-                                width: 150,
-                                child: GalleryExampleItemThumbnail(
-                                  galleryExampleItem: _mainImageItem,
-                                  onTap: () {
-                                    open(context, 0,<GalleryItem>[_mainImageItem]);
-                                  },
-                                ),
+      body: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            child: SizedBox(
+              height: 900,
+              child: Column(
+                  children : <Widget>[
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          height: 660,
+                          child: Form(
+                            key: _formKey,
+                            child: SizedBox(
+                              height: 660,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                    ],
+                                  ),
+                                  SizedBox(height: 15,),
+                                  Center(
+                                    child:
+                                    getMainPhotoContainer(avatarImageFile, photoUrl, (){}),
+                                  ),
+                                  SizedBox(height: 10,),
+                                  appButtonTheme(context, AppLocalizations.of(context).translate('add_image'), ()=>addImageGalleryOrCamera(false,null,0),height: 25,),
+                                  GalleryView(_galleryItems),
+                                  appButtonTheme(context, AppLocalizations.of(context).translate('add_images'), ()=>addImageGalleryOrCamera(false,_galleryItems,5),height: 30,),
+                                  formFieldText(AppLocalizations.of(context).translate('meal_name'), (value) {return null;},onChanged: (value){
+                                    description = value;
+                                  },controller: edtDescriptionController,
+                                      maxLength: 25),
+                                  formFieldText(AppLocalizations.of(context).translate('details'), (value) {return null;}, onChanged: (value){
+                                    detail = value;
+                                  },controller: edtDetailController,
+                                      keyboardType: TextInputType.multiline,
+                                      maxLength: 80
+                                  ),
+                                  formFieldText('Valor Ex: 55.40',(value) {return null;},onChanged: (value){
+                                    if(value != null && value.isNotEmpty) {
+                                      price = double.parse(value);
+                                    }
+                                  },controller: edtPriceController,
+                                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                      maxLength: 8),
+                                  Text(AppLocalizations.of(context).translate('money_explanation')),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 10,),
-                            appButtonTheme(context, 'ADD IMAGEM PRINCIPAL', ()=>addImageGalleryOrCamera(false,null,0),height: 25,),
-                            GalleryView(_galleryItems),
-                            appButtonTheme(context, 'ADICIONAR IMAGEMS', ()=>addImageGalleryOrCamera(false,_galleryItems,5),height: 30,),
-                            formFieldText('Nome do prato', (value) {
-                              if (value.isEmpty) {
-                                return 'Por favor informar o nome do prato';
-                              }
-                              description = value;
-                              return null;
-                            },),
-                            formFieldText('Detalhe', (value) {
-                              if (value.isEmpty) {
-                                return 'Por favor informar o detalhe0';
-                              }
-                              description = value;
-                              return null;
-                            },),
-                            formFieldText('Valor Ex: 55.40',(value) {
-                              if (value.isEmpty) {
-                                return 'Please enter some text right here';
-                              }
-                              price = value as double;
-                              return null;
-                            }),
-
-                          ],
+                          ),
                         ),
+                      Container(
+                          child: Column(
+                            children: <Widget>[
+                              Text(AppLocalizations.of(context).translate('cannot_be_undone')),
+                              appButtonTheme(context, AppLocalizations.of(context).translate('remove_the_item'),
+                                  (){Future.sync(() => onDelete()).then((value){
+                                    if(value) {
+                                      Firestore.instance
+                                          .collection('restaurants/${widget
+                                          .refRestaurant}/menu/${widget
+                                          .refCategory}/itens').document(
+                                          widget.item.id).delete().then((
+                                          value) {
+                                        Fluttertoast.showToast(
+                                            msg: AppLocalizations.of(context)
+                                                .translate('item_removed'));
+                                        Navigator.pop(context);
+                                      });
+                                    }
+                                  });} ),
+                            ],
+                          ) ,
                       ),
+                      ],
                     ),
-                  ),
-
-                ],
+                  ]
               ),
-            ]
+            ),
           ),
-        ),
-      ),
+          // Loading
+          Positioned(
+            child: isLoading
+                ? Container(
+              child: Center(
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(themeColor)),
+              ),
+              color: Colors.white.withOpacity(0.8),
+            )
+                : Container(),
+          ),
+        ],
+      )
+
     );
+  }
+
+  Future<bool> onDelete() {
+    var value = openDialogYesNo(context,AppLocalizations.of(context).translate('are_you_sure_delete'),title: AppLocalizations.of(context).translate('delete_item'),icon: Icons.cancel);
+    return Future.value(value);
   }
 
   Future addImageGalleryOrCamera(bool fromCamera, List<GalleryItem> galleryItems,int maxImages) async {
@@ -190,7 +236,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
             resource: croppedFile.path,
             isSvg: false,
             isLocal: true,));
-          isLoading = true;
+          //isLoading = true;
         });
       }else{
         setState(() {
@@ -200,36 +246,92 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     }
   }
 
+  bool validation(){
+    bool result = true;
+    var price = edtPriceController.text;
+    var description = edtDescriptionController.text;
+    var detail = edtDetailController.text;
+    if(price == null || price.isEmpty){
+      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_item_price'));
+      result = false;
+    }else if(description == null || description.isEmpty){
+      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_item_description'));
+      result = false;
+    }else if(detail == null || detail.isEmpty){
+      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_item_detail'));
+      result = false;
+    }
+    if(widget.isEdit){
+
+    }else{
+       if(avatarImageFile == null){
+         Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_item_main_image'));
+         result = false;
+       }
+       if(files == null || files.length < 3){
+         Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('not_enough_images'));
+         result = false;
+       }
+    }
+    return result;
+  }
+
   void handleSaveData() {
-//    if(!validation()){
-//      return;
-//    }
     setState(() {
       isLoading = true;
     });
-    Firestore.instance
-        .collection('restaurants/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
-        .add({'desc': description, 'detail': detail, 'rate': rate,'price':price}).then((data) async {
-      //refRestaurant = data.documentID;
-      //await prefs.setString(RESTAURANT_PATH, refRestaurant);
-      refItem = data.documentID;
-      uploadFile();
-      uploadGallery();
+    if(!validation()){
       setState(() {
         isLoading = false;
       });
-
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('save_success'));
-    }).catchError((err) {
-      setState(() {
-        isLoading = false;
+      return;
+    }
+    if(widget.isEdit){
+      refItem = widget.item.id;
+      Firestore.instance
+          .collection('restaurants/${widget.refRestaurant}/menu/${widget
+          .refCategory}/itens').document(widget.item.id).updateData({
+                      'desc'  : edtDescriptionController.text,
+                      'detail': edtDetailController.text,
+                      'price': double.parse(edtPriceController.text)}).then((value) {
+        uploadFile();
+        uploadGallery();
+        setState(() {
+          isLoading = false;
+        });
       });
 
-      Fluttertoast.showToast(msg: err.toString());
-    });
+    }else {
+      print('Description: ${edtDescriptionController.toString()}');
+      Firestore.instance
+          .collection('restaurants/${widget.refRestaurant}/menu/${widget
+          .refCategory}/itens')
+          .add({
+        'desc': description,
+        'detail': detail,
+        'rate': rate,
+        'price': price,
+        'category': widget.refCategory
+      }).then((data) async {
+        refItem = data.documentID;
+        uploadFile();
+        uploadGallery();
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('save_success'));
+      }).catchError((err) {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: err.toString());
+      });
+    }
   }
 
   Future uploadFile() async {
+    if(avatarImageFile == null)return;
     String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/main.jpg';
     StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = reference.putFile(avatarImageFile);
@@ -276,11 +378,10 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   }
 
   Future uploadGallery() async {
-
     bool hasError = false;
-    bool isComplete = false;
+    if(files == null)return;
     int index = 0;
-    Fluttertoast.showToast(msg: 'Uploading files ...');
+//    Fluttertoast.showToast(msg: 'Uploading files ...');
     for(File file in files ){
       String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
@@ -294,18 +395,18 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
             Fluttertoast.showToast(msg: 'image $index uploaded!');
             setState(() {
               urls.add(url);
+              urlsFromDB.add(url);
             });
             if(urls.length == files.length){
               setState(() {
-                isComplete = true;
                 isLoading = false;
                 if (!hasError) {
                   Firestore.instance
                       .collection('$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
                       .document(refItem)
-                      .updateData({'images': urls}).then((data) async {
+                      .updateData({'images': urlsFromDB}).then((data) async {
                     setState(() {
-                      isLoading = true;
+                      isLoading = false;
                     });
                     Fluttertoast.showToast(msg: "Upload success");
                   }).catchError((err) {

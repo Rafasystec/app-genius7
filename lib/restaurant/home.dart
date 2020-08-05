@@ -48,15 +48,21 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Center(
+                  child: Text(AppLocalizations.of(context).translate('see_my_menu_digital_explain')),
+                ),
+              ),
               appButtonTheme(context, AppLocalizations.of(context).translate('my_digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
-                1,0,'refRestaurant'
+                1,0,restaurantDoc
               ))))),
               SizedBox(height: 10,),
               appButtonTheme(context, 'EDITAR MENU DIGITAL', (){
                 Future.sync(() => seeDigitalMenu());
               }),
               SizedBox(height: 10,),
-              appButtonTheme(context, 'SOU GARÇOM', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => WaiterMainScreen())))
+              Visibility(visible: false, child: appButtonTheme(context, 'SOU GARÇOM', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => WaiterMainScreen()))))
             ],
           ),
         ),

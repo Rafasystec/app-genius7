@@ -57,8 +57,8 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
             padding: EdgeInsets.all(15.0),
           ),
           imageUrl: galleryExampleItem.resource,
-          width: 100.0,
-          height: 60.0,
+          width: 120.0,
+          height: 120.0,
           fit: BoxFit.cover,
         );
   }

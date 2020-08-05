@@ -8,9 +8,11 @@ import 'package:app/components/dialog_with_field.dart';
 import 'package:app/components/digital_menu_item.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/components/scroll_parent.dart';
+import 'package:app/response/response_menu_item.dart';
 import 'package:app/response/response_rating.dart';
 import 'package:app/restaurant/build_menu_digital.dart';
 import 'package:app/util/app_locations.dart';
+import 'package:app/util/file_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,38 +38,6 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
 //    const Choice(2,title: 'Log out', icon: Icons.exit_to_app),
   ];
   List<Category> _categories;
-//  final List<Category> categories = <Category>[
-//    Category(1,'Entradas', <CategoryItem>[
-//          CategoryItem(1,'058 - PEIXE A CANOA','peixe frito inteiro com arroz, batata frita, baião de 2 e farofa',4,'R\$ 78,50','https://media-cdn.tripadvisor.com/media/photo-s/11/07/1e/74/peixe-frito.jpg',
-//          listImagesUrl: <String>[
-//            'https://i.ytimg.com/vi/kaCsbllNVcQ/maxresdefault.jpg',
-//            'https://www.comidaereceitas.com.br/img/sizeswp/1200x675/2017/12/peixe_assado_recheado.jpg',
-//            'https://www.comidaereceitas.com.br/wp-content/uploads/2008/08/peixe_assado.jpg'
-//          ],
-//          ratings: <ResponseRating>[
-//            ResponseRating('https://image.freepik.com/vetores-gratis/empresaria-elegante-avatar-feminino_24877-18073.jpg','Flávia Lima Audenite','Gostei mais ou menos do serviço. Deixou muito a desejar mas tudo bem né.'),
-//            ResponseRating('https://publicdomainvectors.org/photos/Female-cartoon-avatar.png','Lívia Andrade','Gostei muito do serviço. Muito bem feito, foi indicação de uma amiga muito próxima. Já o coloquei nos meus favotitos. Indico muito mesmo. App tambme é muito bom'),
-//            ResponseRating('https://images.vexels.com/media/users/3/145908/preview2/52eabf633ca6414e60a7677b0b917d92-criador-de-avatar-masculino.jpg','Raul Paz de Andrade','Gostei do serviço mas ele não é pontual, além disso tratou minha vó muito mal')
-//          ]),
-//          CategoryItem(2,'041 - MOQUECA DE ARRAIA','Arraia, arroz, farofa e vinagrete',4,'R\$ 55,00','https://i.pinimg.com/originals/c2/6d/99/c26d9959ab5b31aaad424c89eff298a4.jpg'),
-//          CategoryItem(3,'066 - RISOTO DE CAMARÃO','Camarão, baião ou arroz, batata frita e acompanha jarra de suco.',4,'R\$ 66,00','https://img.itdg.com.br/tdg/images/recipes/000/015/286/326210/326210_original.jpg?mode=crop&width=710&height=400'),
-//          CategoryItem(4,'066 - PEIXADA DO MEIO',',Peixe, Arraia, Camarão, baião ou arroz, batata frita e acompanha jarra de suco.',4,'R\$ 166,00','https://img.itdg.com.br/tdg/images/recipes/000/015/286/326210/326210_original.jpg?mode=crop&width=710&height=400')
-//        ]
-//    ),
-//    Category(2,'Bebidas',
-//        <CategoryItem>[
-//          CategoryItem(1,'Skol','Cerveja Skol 600 ml',4,'R\$ 8,50','https://seeklogo.com/images/S/Skol-logo-F2B28D2CED-seeklogo.com.png'),
-//          CategoryItem(1,'heineken','Cerveja Heineken 600 ml',4,'R\$ 10,50','https://i.pinimg.com/originals/9a/a4/81/9aa481a00d10248313da7d48388125f0.png'),
-//          CategoryItem(1,'Original','Cerveja Original 600 ml',4,'R\$ 10,50','https://http2.mlstatic.com/conjunto-6-porta-copos-antarctica-original-em-cortica-D_NQ_NP_889001-MLB7997292315_032015-F.jpg'),
-//        ]),
-//    Category(3,'Sobremesas',
-//        <CategoryItem>[
-//          CategoryItem(1,'Pudim de chocolate','pudim cremoso de chocolate',4,'R\$ 20,00','http://www.sabordacidade.com.br/fotos/f11s04s2019s11s50s42.jpg'),
-//          CategoryItem(1,'Moranguito','Creme de morango com chantile',4,'R\$ 10,50','https://t2.rg.ltmcdn.com/pt/images/6/3/2/sobremesa_de_morango_para_o_natal_5236_600.jpg'),
-//          CategoryItem(1,'Original','Cerveja Original 600 ml',4,'R\$ 10,50','https://http2.mlstatic.com/conjunto-6-porta-copos-antarctica-original-em-cortica-D_NQ_NP_889001-MLB7997292315_032015-F.jpg'),
-//        ]),
-//  ];
-
 
   @override
   void initState() {
@@ -83,35 +53,39 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
       appBar: AppBar(
         title: Text('MENU'),
         actions: <Widget>[
-          PopupMenuButton<Choice>(
-            onSelected: onItemMenuPress,
-            itemBuilder: (BuildContext context) {
-              return menuChoices.map((Choice choice) {
-                return PopupMenuItem<Choice>(
-                    value: choice,
-                    child: Row(
-                      children: <Widget>[
-                        Icon(
-                          choice.icon,
-                          color: primaryColor,
-                        ),
-                        Container(
-                          width: 10.0,
-                        ),
-                        Text(
-                          choice.title,
-                          style: TextStyle(color: primaryColor),
-                        ),
-                      ],
-                    ));
-              }).toList();
-            },
+          Visibility(
+//            visible: !widget.options.isEditMode,
+            visible: false,
+            child: PopupMenuButton<Choice>(
+              onSelected: onItemMenuPress,
+              itemBuilder: (BuildContext context) {
+                return menuChoices.map((Choice choice) {
+                  return PopupMenuItem<Choice>(
+                      value: choice,
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            choice.icon,
+                            color: primaryColor,
+                          ),
+                          Container(
+                            width: 10.0,
+                          ),
+                          Text(
+                            choice.title,
+                            style: TextStyle(color: primaryColor),
+                          ),
+                        ],
+                      ));
+                }).toList();
+              },
+            ),
           ),
         ],
       ),
       floatingActionButton: Visibility(
         visible: widget.options.isEditMode,
-        child: FloatingActionButton(
+        child: FloatingActionButton.extended(
           onPressed: () async{
             category = await onGetCategoryName();
             print('save category: $category');
@@ -123,7 +97,15 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
               }
             });
           },
-          child: Icon(Icons.add,color: Colors.black,),
+          label: Text('Add Category',style: TextStyle(color: Colors.black),),
+          icon: Icon(Icons.add,color: Colors.black,semanticLabel: 'Add Category',),
+//          child: Row(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            children: <Widget>[
+//              Text('Add Category'),
+//              Icon(Icons.add,color: Colors.black,semanticLabel: 'Add Category',)
+//            ],
+//          ),
           backgroundColor: Color(0xfff5a623),
         ),
       ),
@@ -147,7 +129,24 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                    Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
+                    Visibility(
+                      visible: widget.options.isEditMode,
+                      child: FlatButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6.0),
+                          side: BorderSide(color: Colors.red),
+                        ),
+                        onPressed: (){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant, item.documentID)));
+                        },
+                        child: Text(AppLocalizations.of(context).translate('add_item')),
+                      ),
+                    )
+                ]),
                 Container(
                   height: 250,
                   child: StreamBuilder(
@@ -172,7 +171,6 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
     return widget.options.isEditMode ? Container(
       height: 50.0,
         child: appButtonTheme(context,'Add the first item \n for ${category['desc']}?',(){
-          Fluttertoast.showToast(msg: 'Call old screem to save item');
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,category.documentID)));
         },height: 50.0),
       ) : SizedBox(height: 5,);
@@ -186,7 +184,15 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
             DocumentSnapshot item = docs[index];
             return GestureDetector(
               onTap: () async{
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenuItem(categoryItemFromSnapshot(item))));
+                if(widget.options.isEditMode){
+                  ResponseMenuItem menuItem = ResponseMenuItem(item['desc'],item['category'],item['detail'],item['price'].toDouble(),getImagesFromSnapshot(item['images']),item['id'],item['icon'],item['rate']);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,item['category'],isEdit: true,item: menuItem,)));
+                }else {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          ScreenDigitalMenuItem(
+                              categoryItemFromSnapshot(item))));
+                }
                 //Fluttertoast.showToast(msg: 'Click');
               },
               child: getItemDetail(categoryItemFromSnapshot(item)),
@@ -205,54 +211,13 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
     }
   }
 
-  List<String> getImagesFromSnapshot(List<dynamic> list){
-    List<String> items = List();
-    if(list != null) {
-      for (dynamic element in list) {
-        items.add(element);
-      }
-    }
-    return items;
-  }
+
 
   Future<String> onGetCategoryName() {
     var value = openDialogField(context,title: AppLocalizations.of(context).translate('category_name'));
     return Future.value(value);
   }
 
-//  Future<List<Category> > getCategories() async{
-//    QuerySnapshot result = await Firestore.instance.collection('restaurants/IHwVo5efFvYETtQuleCF/menu').getDocuments();
-//    List<Category> categoryList = List();
-//    if(result.documents.length > 0){
-//      List<DocumentSnapshot> categories = result.documents;
-//      for(DocumentSnapshot category in categories){
-//        var descCategory = category['desc'];
-//        QuerySnapshot items = await category.reference.collection("itens").getDocuments();
-//        List<CategoryItem> categoryItems = List();
-//        if(items.documents.length > 0){
-//          List<DocumentSnapshot> itemsDoc = items.documents;
-//          for(DocumentSnapshot item in itemsDoc ){
-//            var id = 0;
-//            var desc = '${item['code']} - ${item['desc']}';
-//            var detail = item['detail'];
-//            var icon = item['icon'];
-//            var price = formatCurrency(item['price']);
-//            var rate = item['rate'];
-//            categoryItems.add(CategoryItem(0,desc,detail,rate,price,icon)) ;
-//          }
-//        }
-//        categoryList.add(Category(0,descCategory,categoryItems));
-//      }
-//
-//    }
-//    return categoryList;
-//  }
-//  Category(2,'Bebidas',
-//  <CategoryItem>[
-//      CategoryItem(1,'Skol','Cerveja Skol 600 ml',4,'R\$ 8,50','https://seeklogo.com/images/S/Skol-logo-F2B28D2CED-seeklogo.com.png'),
-//      CategoryItem(1,'heineken','Cerveja Heineken 600 ml',4,'R\$ 10,50','https://i.pinimg.com/originals/9a/a4/81/9aa481a00d10248313da7d48388125f0.png'),
-//      CategoryItem(1,'Original','Cerveja Original 600 ml',4,'R\$ 10,50','https://http2.mlstatic.com/conjunto-6-porta-copos-antarctica-original-em-cortica-D_NQ_NP_889001-MLB7997292315_032015-F.jpg'),
-//  ]),
 
 
 }

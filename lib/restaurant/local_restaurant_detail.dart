@@ -38,7 +38,7 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
                 children: <Widget>[
                   appButtonTheme(context, 'VER LOCAL', ()=>openMapsSheet(context),minWidth: 80),
                   SizedBox(width: 20,),
-                  appButtonTheme(context, 'VER MENU', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(2,0,'refRestaurant')))) ,minWidth: 80),
+                  appButtonTheme(context, 'VER MENU', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(2,0,widget.restaurant.documentID)))) ,minWidth: 80),
                 ],
               )
           ),
