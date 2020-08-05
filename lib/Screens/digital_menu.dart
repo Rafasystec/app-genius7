@@ -9,7 +9,6 @@ import 'package:app/components/digital_menu_item.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/components/scroll_parent.dart';
 import 'package:app/response/response_menu_item.dart';
-import 'package:app/response/response_rating.dart';
 import 'package:app/restaurant/build_menu_digital.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
@@ -97,15 +96,8 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
               }
             });
           },
-          label: Text('Add Category',style: TextStyle(color: Colors.black),),
-          icon: Icon(Icons.add,color: Colors.black,semanticLabel: 'Add Category',),
-//          child: Row(
-//            mainAxisAlignment: MainAxisAlignment.center,
-//            children: <Widget>[
-//              Text('Add Category'),
-//              Icon(Icons.add,color: Colors.black,semanticLabel: 'Add Category',)
-//            ],
-//          ),
+          label: Text(AppLocalizations.of(context).translate('add_category'),style: TextStyle(color: Colors.black),),
+          icon: Icon(Icons.add,color: Colors.black,semanticLabel: AppLocalizations.of(context).translate('add_category'),),
           backgroundColor: Color(0xfff5a623),
         ),
       ),

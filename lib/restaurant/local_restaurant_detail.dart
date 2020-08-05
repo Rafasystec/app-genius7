@@ -36,7 +36,10 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  appButtonTheme(context, 'VER LOCAL', ()=>openMapsSheet(context),minWidth: 80),
+                  appButtonTheme(context, 'VER LOCAL', ()=>openMapsSheet(context,
+                                      widget.restaurant['name'],
+                                      widget.restaurant['address']
+                                      ,Coords(widget.restaurant['lat'],widget.restaurant['long'])),minWidth: 80),
                   SizedBox(width: 20,),
                   appButtonTheme(context, 'VER MENU', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(2,0,widget.restaurant.documentID)))) ,minWidth: 80),
                 ],
@@ -66,11 +69,11 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
     );
   }
 
-  openMapsSheet(context) async {
+  openMapsSheet(context, final String title, final String description, Coords coords) async {
     try {
-      final title = "Shanghai Tower";
-      final description = "Asia's tallest building";
-      final coords = Coords(31.233568, 121.505504);
+//      final title = "Shanghai Tower";
+//      final description = "Asia's tallest building";
+//      final coords = Coords(31.233568, 121.505504);
       final availableMaps = await MapLauncher.installedMaps;
 
       showModalBottomSheet(
