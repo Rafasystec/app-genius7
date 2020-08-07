@@ -14,6 +14,7 @@ import 'package:app/restaurant/settings.dart';
 import 'package:app/restaurant/waiter_home.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
+import 'package:app/util/preference_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,17 +58,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
             'user-ref', isEqualTo: prefs.getString(USER_REF)).getDocuments();
         final List<DocumentSnapshot> documents = result.documents;
         if (documents.length == 1) {
-          prefs.setBool(REST_EDIT_MODE, true);
-          prefs.setString(RESTAURANT_PATH, documents[0].documentID);
-          prefs.setBool(REST_ACTIVE   , documents[0][FB_REST_ACTIVE]);
-          prefs.setString(REST_ADDRESS, documents[0][FB_REST_ADDRESS]);
-          prefs.setString(REST_AVATAR , documents[0][FB_REST_AVATAR]);
-          prefs.setStringList(REST_IMAGES,  getImagesFromSnapshot(documents[0][FB_REST_IMAGES]));
-          prefs.setString(REST_ID   , documents[0][FB_REST_ID]);
-          prefs.setDouble(REST_LAT  , documents[0][FB_REST_LAT]);
-          prefs.setDouble(REST_LNG  , documents[0][FB_REST_LONG]);
-          prefs.setString(REST_NAME , documents[0][FB_REST_NAME]);
-          prefs.setString(REST_USER , documents[0][FB_REST_USER]);
+          PreferenceUtil.setRestPreferenceFromDocument(documents[0]);
         } else if (documents.length > 1) {
           prefs.setBool(HAS_MORE_ESTABLISHMENTS, true);
         }
@@ -146,6 +137,9 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
 //    }else{
 //        Restaurant restaurant = await getRestaurantFromFirebase(restaurantDoc);
 //        Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(restaurant)));
+        if(restaurantDoc == null || restaurantDoc.isEmpty){
+            restaurantDoc = prefs.getString(RESTAURANT_PATH);
+        }
         var options = DigitalMenuOptions(1, 2,restaurantDoc,isEditMode: true);
         Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ScreenDigitalMenu(options)));

@@ -6,6 +6,7 @@ import 'package:app/components/screen_util.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
 import 'package:app/util/global_param.dart';
+import 'package:app/util/preference_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -66,7 +67,19 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       pickerFile = await _picker.getImage(source: ImageSource.gallery);
     }
     if (pickerFile != null) {
-     File croppedFile = await getCompressedCropImage(pickerFile);
+      File croppedFile;
+      try {
+        croppedFile = await getCompressedCropImage(pickerFile);
+      }catch(e){
+        setState(() {
+          isLoading = false;
+        });
+      }
+      if(croppedFile == null){
+        setState(() {
+          isLoading = false;
+        });
+      }
      if(galleryItems != null ) {
        setState(() {
          showRemoveAll = true;
@@ -81,6 +94,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
      }else{
        setState(() {
          avatarImageFile = croppedFile;
+         isLoading = false;
        });
      }
     }
@@ -128,7 +142,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         FB_REST_USER: widget.userRef}).then((data) async {
         refRestaurant = data.documentID;
         await prefs.setString(RESTAURANT_PATH, refRestaurant);
-
+        PreferenceUtil.setRestPreferenceFromDocument(await data.get());
         uploadFile();
         uploadGallery();
         setState(() {
@@ -168,6 +182,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         address       = prefs.getString(REST_ADDRESS);
         urlsFromDB    = prefs.getStringList(REST_IMAGES);
         _galleryItems = getGalleryItems(urlsFromDB);
+      }else{
+        controllerRestaurantName = TextEditingController();
       }
     });
 

@@ -10,6 +10,7 @@ import 'package:app/components/screen_util.dart';
 import 'package:app/components/scroll_parent.dart';
 import 'package:app/response/response_menu_item.dart';
 import 'package:app/restaurant/build_menu_digital.dart';
+import 'package:app/restaurant/settings.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../const.dart';
 
@@ -37,12 +39,14 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
 //    const Choice(2,title: 'Log out', icon: Icons.exit_to_app),
   ];
   List<Category> _categories;
+  SharedPreferences prefs;
 
   @override
   void initState() {
     _controller = ScrollController();
 //    Future<List<Category>> future = getCategories();
 //    future.then((value) => _categories = value);
+
     super.initState();
   }
 
@@ -86,15 +90,29 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
         visible: widget.options.isEditMode,
         child: FloatingActionButton.extended(
           onPressed: () async{
-            category = await onGetCategoryName();
-            print('save category: $category');
-            Firestore.instance.collection('restaurants/${widget.options.refRestaurant}/menu').add({
-              'desc': category }).then((value){
-              if(value != null){
-                Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('saved'));
-                print('Document ID: ${value.documentID}');
+            var refRest = widget.options.refRestaurant;
+            if(refRest == null || refRest.isEmpty) {
+              prefs = await SharedPreferences.getInstance();
+              Fluttertoast.showToast(msg: 'Você precisa configurar o ser perfil primeiro.');
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF))));
+            }else {
+              category = await onGetCategoryName();
+              print('save category: $category');
+
+              if (refRest != null && refRest.isNotEmpty) {
+                Firestore.instance.collection(
+                    'restaurants/${widget.options.refRestaurant}/menu').add({
+                  'desc': category}).then((value) {
+                  if (value != null) {
+                    Fluttertoast.showToast(
+                        msg: AppLocalizations.of(context).translate('saved'));
+                    print('Document ID: ${value.documentID}');
+                  }
+                });
+              } else {
+
               }
-            });
+            }
           },
           label: Text(AppLocalizations.of(context).translate('add_category'),style: TextStyle(color: Colors.black),),
           icon: Icon(Icons.add,color: Colors.black,semanticLabel: AppLocalizations.of(context).translate('add_category'),),

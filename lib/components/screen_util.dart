@@ -91,7 +91,7 @@ void open(BuildContext context, final int index, List<GalleryItem> galleryItems)
   );
 }
 
-Widget formField(BuildContext context, TextEditingController controller,ValueChanged<String> onChanged,String hint, FocusNode focus){
+Widget formField(BuildContext context, TextEditingController controller,ValueChanged<String> onChanged,String hint, FocusNode focus,{TextInputType keyboardType = TextInputType.text}){
   return Container(
     child: Theme(
       data: Theme.of(context).copyWith(primaryColor: primaryColor),
@@ -104,6 +104,7 @@ Widget formField(BuildContext context, TextEditingController controller,ValueCha
         controller: controller,
         onChanged: onChanged,
         focusNode: focus,
+        keyboardType: keyboardType,
       ),
     ),
     margin: EdgeInsets.only(left: 30.0, right: 30.0),
