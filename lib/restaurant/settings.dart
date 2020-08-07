@@ -21,6 +21,9 @@ import 'package:google_maps_webservice/places.dart';
 import '../const.dart';
 
 class ScreenSettings extends StatefulWidget {
+  final String userRef;
+  final bool isEdit;
+  ScreenSettings(this.userRef,{this.isEdit = false});
   @override
   _ScreenSettingsState createState() => _ScreenSettingsState();
 }
@@ -31,8 +34,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   File avatarImageFile;
   String photoUrl,name, address = '';
   ImagePicker _picker;
-  bool isLoading,isLoggedIn, showRemoveAll = false;
-//  bool isLoggedIn = false;
+  bool isLoading      = false,
+       isLoggedIn     = false,
+       showRemoveAll  = false;
   String refRestaurant;
   SharedPreferences prefs;
   TextEditingController controllerRestaurantName;
@@ -40,11 +44,15 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
   double lat,lng = 0;
   List<GalleryItem> _galleryItems = List();
-  List<String> urls = List();
-  List<File> files = List();
-
+  List<String> urls       = List();
+  List<String> urlsFromDB = List();
+  List<File> files        = List();
+  bool isEditMode         = false;
   /// See this for crop detail: https://pub.dev/packages/image_cropper
   Future addImageGalleryOrCamera(bool fromCamera, List<GalleryItem> galleryItems,int maxImages) async {
+    setState(() {
+      isLoading = true;
+    });
     if(galleryItems != null) {
       if (galleryItems.length >= maxImages) {
         Fluttertoast.showToast(msg: '${AppLocalizations.of(context).translate('you_can_just_add')} ${GlobalParameters.maxImageAmount} ${AppLocalizations.of(context).translate('images')}');
@@ -68,7 +76,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
            resource: croppedFile.path,
            isSvg: false,
            isLocal: true,));
-         isLoading = true;
+         isLoading = false;
        });
      }else{
        setState(() {
@@ -85,39 +93,87 @@ class _ScreenSettingsState extends State<ScreenSettings> {
     setState(() {
       isLoading = true;
     });
-    Firestore.instance
-        .collection(COLLECTION_RESTAURANT)
-        .add({'name': name, 'active': true, 'avatar': photoUrl,'id':2,'lat':lat,'long':lng,'rate':0, 'address':address, 'images':urls}).then((data) async {
-      refRestaurant = data.documentID;
-      await prefs.setString(RESTAURANT_PATH, refRestaurant);
 
-      uploadFile();
-      uploadGallery();
-      setState(() {
-        isLoading = false;
+    if(isEditMode){
+      Firestore.instance
+          .collection(COLLECTION_RESTAURANT)
+          .document(refRestaurant)
+      .updateData({FB_REST_NAME: name
+      }).then((data) async {
+        prefs.setString(REST_NAME, name);
+        uploadFile();
+        uploadGallery();
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('save_success'));
+      }).catchError((err) {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: err.toString());
       });
+    }else {
+      Firestore.instance
+          .collection(COLLECTION_RESTAURANT)
+          .add({FB_REST_NAME: name,
+        FB_REST_ACTIVE: true,
+        FB_REST_AVATAR: photoUrl,
+        //'id':2,
+        FB_REST_LAT: lat,
+        FB_REST_LONG: lng,
+        FB_REST_RATE: 0,
+        FB_REST_ADDRESS: address,
+        FB_REST_IMAGES: urls,
+        FB_REST_USER: widget.userRef}).then((data) async {
+        refRestaurant = data.documentID;
+        await prefs.setString(RESTAURANT_PATH, refRestaurant);
 
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('save_success'));
-    }).catchError((err) {
-      setState(() {
-        isLoading = false;
+        uploadFile();
+        uploadGallery();
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('save_success'));
+      }).catchError((err) {
+        setState(() {
+          isLoading = false;
+        });
+
+        Fluttertoast.showToast(msg: err.toString());
       });
-
-      Fluttertoast.showToast(msg: err.toString());
-    });
+    }
   }
 
   void readLocal() async {
     prefs         = await SharedPreferences.getInstance();
     refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
-    photoUrl      = prefs.getString(RESTAURANT_IMG_PATH) ?? '';
-    if(refRestaurant.trim().isEmpty){
-      isLoggedIn = false;
-    }else{
-      isLoggedIn = true;
-    }
+    photoUrl      = prefs.getString(REST_AVATAR) ?? '';
+    setState(() {
+      var tempIsEdit = prefs.getBool(REST_EDIT_MODE);
+      if(tempIsEdit != null){
+        isEditMode = tempIsEdit;
+      }else{
+        isEditMode = false;
+      }
+      if(refRestaurant.trim().isEmpty){
+        isLoggedIn = false;
+      }else{
+        isLoggedIn = true;
+      }
+      if(isEditMode){
+        var name = prefs.getString(REST_NAME);
+        controllerRestaurantName = TextEditingController(text: name);
+        address       = prefs.getString(REST_ADDRESS);
+        urlsFromDB    = prefs.getStringList(REST_IMAGES);
+        _galleryItems = getGalleryItems(urlsFromDB);
+      }
+    });
+
+
     // Force refresh input
-    setState(() {});
+//    setState(() {});
   }
 
   void deleteGallery(){
@@ -127,8 +183,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
     if(refDoc != null) {
       String ref = refDoc.documentID;
       if(ref.isNotEmpty) {
-        refDoc.updateData({'images': FieldValue.delete()}).then((value) =>
-            Fluttertoast.showToast(msg: 'Imagens apagadas'));
+        refDoc.updateData({FB_REST_IMAGES: FieldValue.delete()}).then((value) =>
+            Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('deleted_images')));
       }
     }
     setState(() {
@@ -140,6 +196,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   }
 
   Future uploadFile() async {
+    if(avatarImageFile == null)return;
     String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/main_$refRestaurant';
     StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = reference.putFile(avatarImageFile);
@@ -152,13 +209,14 @@ class _ScreenSettingsState extends State<ScreenSettings> {
           Firestore.instance
               .collection(COLLECTION_RESTAURANT)
               .document(refRestaurant)
-              .updateData({'avatar': photoUrl,
-                           'id': refRestaurant}).then((data) async {
-            await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
+              .updateData({FB_REST_AVATAR: photoUrl,
+                           FB_REST_ID: refRestaurant}).then((data) async {
+//            await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
             setState(() {
               isLoading = false;
             });
-            Fluttertoast.showToast(msg: "Upload success");
+            prefs.setString(REST_AVATAR , photoUrl);
+            Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('update_success'));
           }).catchError((err) {
             setState(() {
               isLoading = false;
@@ -187,11 +245,15 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
 
   Future uploadGallery() async {
-
     bool hasError = false;
-    bool isComplete = false;
+    if(files == null || files.length == 0){
+      return;
+    }
     int index = 0;
     Fluttertoast.showToast(msg: 'Uploading files ...');
+    setState(() {
+      isLoading = true;
+    });
     for(File file in files ){
       String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
@@ -205,23 +267,24 @@ class _ScreenSettingsState extends State<ScreenSettings> {
             Fluttertoast.showToast(msg: 'image $index uploaded!');
             setState(() {
               urls.add(url);
+              urlsFromDB.add(url);
             });
             if(urls.length == files.length){
               setState(() {
-                isComplete = true;
-                isLoading = false;
+                isLoading = true;
                 if (!hasError) {
                   Firestore.instance
                       .collection(COLLECTION_RESTAURANT)
                       .document(refRestaurant)
-                      .updateData({'images': urls}).then((data) async {
+                      .updateData({'images': urlsFromDB}).then((data) async {
                     setState(() {
-                      isLoading = true;
+                      isLoading = false;
                     });
+                    prefs.setStringList(REST_IMAGES,  urlsFromDB);
                     Fluttertoast.showToast(msg: "Upload success");
                   }).catchError((err) {
                     setState(() {
-                      isLoading = true;
+                      isLoading = false;
                     });
                     Fluttertoast.showToast(msg: err.toString());
                   });
@@ -261,26 +324,27 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
   bool validation(){
     bool result = true;
-
-    if(address == null || address.isEmpty){
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_address'));
-      result = false;
+    name = controllerRestaurantName.text;
+    if(!isEditMode) {
+      if (address == null || address.isEmpty) {
+        Fluttertoast.showToast(
+            msg: AppLocalizations.of(context).translate('inform_the_address'));
+        result = false;
+      }
+      if(files.isEmpty || files.length < 3){
+        Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('add_at_least'));
+        result = false;
+      }
+      if(avatarImageFile == null){
+        Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('add_main_image'));
+        result = false;
+      }
     }
     if(name == null || name.isEmpty){
       Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_restaurant_name'));
       result = false;
     }
-    if(files.isEmpty || files.length < 3){
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('add_at_least'));
-      result = false;
-    }
-    if(avatarImageFile == null){
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('add_main_image'));
-      result = false;
-    }
-
     return result;
-
   }
 
   Future<void> _handlePressButton() async {
@@ -294,7 +358,6 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       language: AppLocalizations.of(context).translate('lang_country_code'),
       components: [Component(Component.country, AppLocalizations.of(context).translate('place_country_code'))],
     );
-
     displayPrediction(p);
   }
 
@@ -327,8 +390,15 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         actions: <Widget>[
           FlatButton(
             child: Text(AppLocalizations.of(context).translate('save').toUpperCase()),
-            onPressed: (){
-              handleSaveData();
+            onPressed: () async {
+              if(!isLoading) {
+                setState(() {
+                  isLoading = true;
+                });
+                handleSaveData();
+              }else{
+                Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('please_wait'));
+              }
             },
           )
         ],
@@ -345,7 +415,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 //                SizedBox(height: 20.0,),
 //                appButtonTheme(context,'SAVE',handleSaveData),
                 SizedBox(height: 20.0,),
-                appButtonTheme(context, AppLocalizations.of(context).translate('your_address'), _handlePressButton,height: 35.0),
+                buildAppButtonForAddress(context),
                 SizedBox(height: 20.0,),
                 Container(
                   padding: EdgeInsets.all(10.0),
@@ -383,8 +453,31 @@ class _ScreenSettingsState extends State<ScreenSettings> {
               ],
             ),
           ),
+          Positioned(
+            child: isLoading
+                ? Container(
+              child: Center(
+                child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(themeColor)),
+              ),
+              color: Colors.white.withOpacity(0.8),
+            )
+                : Container(),
+          ),
         ],
       ),
     );
+  }
+
+  Widget buildAppButtonForAddress(BuildContext context) {
+    if(isEditMode){
+      return Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Center(child: Text(AppLocalizations.of(context).translate('only_pro_user_can_change_address'))),
+      );
+    }else {
+      return appButtonTheme(
+          context, AppLocalizations.of(context).translate('your_address'),
+          _handlePressButton, height: 35.0);
+    }
   }
 }

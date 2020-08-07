@@ -1,7 +1,9 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -101,3 +103,49 @@ List<String> getImagesFromSnapshot(List<dynamic> list){
   }
   return items;
 }
+
+//Future uploadFile(String path, File file,{FutureOr<R> onValue(T value)}) async {
+//  //String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/main_$refRestaurant';
+//  StorageReference reference = FirebaseStorage.instance.ref().child(path);
+//  StorageUploadTask uploadTask = reference.putFile(file);
+//  StorageTaskSnapshot storageTaskSnapshot;
+//  uploadTask.onComplete.then((value) {
+//    if (value.error == null) {
+//      storageTaskSnapshot = value;
+//      storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
+//        photoUrl = downloadUrl;
+//        Firestore.instance
+//            .collection(COLLECTION_RESTAURANT)
+//            .document(refRestaurant)
+//            .updateData({FB_REST_AVATAR: photoUrl,
+//          FB_REST_ID: refRestaurant}).then((data) async {
+//          await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
+//          setState(() {
+//            isLoading = false;
+//          });
+//          Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('update_success'));
+//        }).catchError((err) {
+//          setState(() {
+//            isLoading = false;
+//          });
+//          Fluttertoast.showToast(msg: err.toString());
+//        });
+//      }, onError: (err) {
+//        setState(() {
+//          isLoading = false;
+//        });
+//        Fluttertoast.showToast(msg: 'This file is not an image');
+//      });
+//    } else {
+//      setState(() {
+//        isLoading = false;
+//      });
+//      Fluttertoast.showToast(msg: 'This file is not an image');
+//    }
+//  }, onError: (err) {
+//    setState(() {
+//      isLoading = false;
+//    });
+//    Fluttertoast.showToast(msg: err.toString());
+//  });
+//}

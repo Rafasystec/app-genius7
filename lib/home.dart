@@ -47,7 +47,7 @@ class HomeScreenState extends State<HomeScreen> {
   final String currentUserId;
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-//  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   bool isLoading = false;
   List<ResponseCliAgenda> agendas = new List();
@@ -134,8 +134,8 @@ class HomeScreenState extends State<HomeScreen> {
       });
 
       await FirebaseAuth.instance.signOut();
-//      await googleSignIn.disconnect();
-//      await googleSignIn.signOut();
+      await googleSignIn.disconnect();
+      await googleSignIn.signOut();
 
       this.setState(() {
         isLoading = false;

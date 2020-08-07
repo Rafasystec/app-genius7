@@ -3,6 +3,7 @@ import 'package:app/Screens/screen_pro_agenda.dart';
 import 'package:app/components/pro_rating.dart';
 import 'package:app/components/prod_detail.dart';
 import 'package:app/const.dart';
+import 'package:app/enums/from_screen_enum.dart';
 import 'package:app/login.dart';
 import 'package:app/response/response_pro.dart';
 import 'package:flutter/cupertino.dart';
@@ -67,7 +68,7 @@ class ScreenProDetailAgenda extends StatelessWidget{
                 onTap: (){
                   readLocal().then((value){
                     if(value.isEmpty){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(title: 'Faça o login',)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(FromScreen.LOGIN_CLIENT, title: 'Faça o login',)));
                     }else{
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => Chat(peerId: _responsePro.idUserFirebase,peerAvatar: 'avatar',)));
                     }

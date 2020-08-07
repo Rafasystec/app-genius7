@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:app/Screens/digital_menu.dart';
 import 'package:app/Screens/digital_menu_read_qrcode.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/enums/from_screen_enum.dart';
 import 'package:app/home.dart';
+import 'package:app/login.dart';
 import 'package:app/restaurant/home.dart';
 import 'package:app/restaurant/settings.dart';
 import 'package:app/settings.dart';
@@ -29,6 +31,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
   bool isLoading = false;
   SharedPreferences prefs;
   String refRestaurant;
+  String refUser;
   final GoogleSignIn googleSignIn = GoogleSignIn();
   List<Choice> mainChoices = const <Choice>[
     const Choice(0,title: 'Perfil', icon: Icons.settings),
@@ -45,6 +48,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
   void readLocal() async {
     prefs = await SharedPreferences.getInstance();
     refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+    refUser       = prefs.getString(USER_REF) ?? '';
   }
 
 
@@ -56,10 +60,14 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
         isLoading = true;
       });
 
-      await FirebaseAuth.instance.signOut();
-      await googleSignIn.disconnect();
-      await googleSignIn.signOut();
-
+      bool isSignedIn = await googleSignIn.isSignedIn();
+      if(isSignedIn) {
+        await FirebaseAuth.instance.signOut();
+        await googleSignIn.disconnect();
+        await googleSignIn.signOut();
+      }
+      prefs = await SharedPreferences.getInstance();
+      prefs.clear();
       this.setState(() {
         isLoading = false;
       });
@@ -137,19 +145,15 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
                 padding: EdgeInsets.all(8.0),
                 child: Text(AppLocalizations.of(context).translate('are_you_a_restaurant'))),
             SizedBox(height: 10,),
-            appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () {
-                if(refRestaurant != null && refRestaurant.isNotEmpty) {
+            appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () async {
+                prefs         = await SharedPreferences.getInstance();
+                refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+                refUser       = prefs.getString(USER_REF) ?? '';
+                if(refUser == null || refUser.isEmpty){
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => HomeScreenRestaurant()));
-                }else{
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ScreenSettings())).then((value){
-                    readLocal();
-                    if(refRestaurant != null && refRestaurant.isNotEmpty) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => HomeScreenRestaurant()));
-                    }
-                  });
+                      builder: (context) => LoginScreen(FromScreen.LOGIN_RESTAURANT)));
+                }else {
+                  restaurantIsRegister(context);
                 }
               }
             ),
@@ -157,6 +161,21 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
         )
     );
 
+  }
+
+  void restaurantIsRegister(BuildContext context) {
+    if(refRestaurant != null && refRestaurant.isNotEmpty) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => HomeScreenRestaurant()));
+      }else{
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ScreenSettings(refUser))).then((value){
+          if(refRestaurant != null && refRestaurant.isNotEmpty) {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => HomeScreenRestaurant()));
+          }
+        });
+      }
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:app/components/image_circle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../const.dart';
@@ -151,5 +152,13 @@ showAlertDialog(BuildContext context){
       return alert;
     },
   );
+}
+
+void finish(BuildContext context){
+  if (Navigator.canPop(context)) {
+    Navigator.pop(context);
+  } else {
+    SystemNavigator.pop();
+  }
 }
 

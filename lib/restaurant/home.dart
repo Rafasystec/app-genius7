@@ -6,16 +6,20 @@ import 'package:app/Objects/menu.dart';
 import 'package:app/Objects/point.dart';
 import 'package:app/Objects/restaurant.dart';
 import 'package:app/Screens/digital_menu.dart';
+import 'package:app/components/choice.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/const.dart';
-import 'package:app/restaurant/categories.dart';
+import 'package:app/main.dart';
+import 'package:app/restaurant/settings.dart';
 import 'package:app/restaurant/waiter_home.dart';
 import 'package:app/util/app_locations.dart';
+import 'package:app/util/file_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'build_menu_digital.dart';
 
 class HomeScreenRestaurant extends StatefulWidget {
   @override
@@ -26,10 +30,49 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
   SharedPreferences prefs;
   String userId;
   String restaurantDoc;
+  List<Choice> choices = const <Choice>[
+    const Choice(0, title: 'Perfil', icon: Icons.settings),
+    const Choice(1, title: 'Log out', icon: Icons.exit_to_app),
+  ];
+  bool isLoading = false;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
   @override
   void initState() {
     readLocal();
+    getEstablishmentsFromThatUser();
     super.initState();
+  }
+
+  Future getEstablishmentsFromThatUser() async {
+    //------------------------------------------------------------
+    //NOTE: we need to check if the user has one restaurant or more
+    //------------------------------------------------------------
+    prefs = await SharedPreferences.getInstance();
+    bool hasMore = prefs.getBool(HAS_MORE_ESTABLISHMENTS) == null ? false : prefs.getBool(HAS_MORE_ESTABLISHMENTS);
+    if(!hasMore) {
+      var address = prefs.getString(REST_ADDRESS);
+      if( address == null || address.isEmpty) {
+        final QuerySnapshot result = await Firestore.instance.collection(
+            COLLECTION_RESTAURANT).where(
+            'user-ref', isEqualTo: prefs.getString(USER_REF)).getDocuments();
+        final List<DocumentSnapshot> documents = result.documents;
+        if (documents.length == 1) {
+          prefs.setBool(REST_EDIT_MODE, true);
+          prefs.setString(RESTAURANT_PATH, documents[0].documentID);
+          prefs.setBool(REST_ACTIVE   , documents[0][FB_REST_ACTIVE]);
+          prefs.setString(REST_ADDRESS, documents[0][FB_REST_ADDRESS]);
+          prefs.setString(REST_AVATAR , documents[0][FB_REST_AVATAR]);
+          prefs.setStringList(REST_IMAGES,  getImagesFromSnapshot(documents[0][FB_REST_IMAGES]));
+          prefs.setString(REST_ID   , documents[0][FB_REST_ID]);
+          prefs.setDouble(REST_LAT  , documents[0][FB_REST_LAT]);
+          prefs.setDouble(REST_LNG  , documents[0][FB_REST_LONG]);
+          prefs.setString(REST_NAME , documents[0][FB_REST_NAME]);
+          prefs.setString(REST_USER , documents[0][FB_REST_USER]);
+        } else if (documents.length > 1) {
+          prefs.setBool(HAS_MORE_ESTABLISHMENTS, true);
+        }
+      }
+    }
   }
 
   void readLocal() async {
@@ -42,6 +85,32 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('restaurant')),
+        actions: <Widget>[
+          PopupMenuButton<Choice>(
+            onSelected: onItemMenuPress,
+            itemBuilder: (BuildContext context) {
+              return choices.map((Choice choice) {
+                return PopupMenuItem<Choice>(
+                    value: choice,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
+                          choice.icon,
+                          color: primaryColor,
+                        ),
+                        Container(
+                          width: 10.0,
+                        ),
+                        Text(
+                          choice.title,
+                          style: TextStyle(color: primaryColor),
+                        ),
+                      ],
+                    ));
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Container(
@@ -129,5 +198,36 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
         return null;
       }
   }
+
+  void onItemMenuPress(Choice choice) async {
+    if (choice.id == 1) {
+      handleSignOut();
+    } else {
+      prefs = await SharedPreferences.getInstance();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(RESTAURANT_PATH))));
+    }
+  }
+
+
+    Future<Null> handleSignOut() async {
+      this.setState(() {
+        isLoading = true;
+      });
+
+      await FirebaseAuth.instance.signOut();
+      await googleSignIn.disconnect();
+      await googleSignIn.signOut();
+
+      this.setState(() {
+        isLoading = false;
+      });
+
+      prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+//      PreferenceUtil.clear(prefs);
+
+      Navigator.of(context)
+          .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyApp()), (Route<dynamic> route) => false);
+    }
 
 }
