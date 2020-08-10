@@ -22,7 +22,7 @@ class PreferenceUtil{
     prefs.setDouble(REST_LAT  , document[FB_REST_LAT]);
     prefs.setDouble(REST_LNG  , document[FB_REST_LONG]);
     prefs.setString(REST_NAME , document[FB_REST_NAME]);
-    prefs.setString(REST_USER , document[FB_REST_USER]);
+    prefs.setString(REST_USER , document  [FB_REST_USER]);
   }
 }
 

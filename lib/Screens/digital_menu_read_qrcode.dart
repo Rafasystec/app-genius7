@@ -50,7 +50,7 @@ class _ScreenReadQrCodeState extends State<ScreenReadQrCode> {
           //TODO when read, call the firebase to trigger the other smartphone
           //TODO after call the menu for this restaurant
           if(this.barcode.isNotEmpty) {
-            var options = DigitalMenuOptions(1, 2,'refRestaurant');
+            var options = DigitalMenuOptions(1, 2, result.rawContent);
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ScreenDigitalMenu(options)));
           }

@@ -10,6 +10,7 @@ import 'package:app/components/choice.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/const.dart';
 import 'package:app/main.dart';
+import 'package:app/restaurant/qrcode_screen.dart';
 import 'package:app/restaurant/settings.dart';
 import 'package:app/restaurant/waiter_home.dart';
 import 'package:app/util/app_locations.dart';
@@ -122,6 +123,10 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
                 Future.sync(() => seeDigitalMenu());
               }),
               SizedBox(height: 10,),
+              appButtonTheme(context, 'GERAR QR-CODE', () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => QRCodeScreen(restaurantDoc)));
+              }),
+              SizedBox(height: 10,),
               Visibility(visible: false, child: appButtonTheme(context, 'SOU GARÇOM', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => WaiterMainScreen()))))
             ],
           ),
@@ -150,7 +155,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
 
   Future<Restaurant> getRestaurantFromFirebase(String dofRefRestaurant) async{
     Menu digitalMenu = Menu();
-    QuerySnapshot result = await Firestore.instance.collection('restaurants').where('id', isEqualTo: dofRefRestaurant).getDocuments();
+    QuerySnapshot result = await Firestore.instance.collection(COLLECTION_RESTAURANT).where(FB_REST_ID, isEqualTo: dofRefRestaurant).getDocuments();
     if(result.documents.length > 0) {
       final List<DocumentSnapshot> documents = result.documents;
       var id = documents[0]['id'];
@@ -198,7 +203,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
       handleSignOut();
     } else {
       prefs = await SharedPreferences.getInstance();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(RESTAURANT_PATH))));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF))));
     }
   }
 
