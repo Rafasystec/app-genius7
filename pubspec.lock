@@ -331,12 +331,10 @@ packages:
   flutter_facebook_login:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "6971fc23ce4b158d8aa5157420442641d3d6ac65"
-      url: "https://github.com/lequanghiep74/flutter_facebook_login"
-    source: git
-    version: "2.0.0"
+      name: flutter_facebook_login
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   flutter_form_builder:
     dependency: "direct main"
     description:
@@ -391,6 +389,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.8"
+  flutter_rating_bar:
+    dependency: "direct main"
+    description:
+      name: flutter_rating_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1+1"
   flutter_screenutil:
     dependency: "direct main"
     description:

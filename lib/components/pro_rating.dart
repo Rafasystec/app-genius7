@@ -24,7 +24,20 @@ class ProRating extends StatelessWidget {
         subtitle: Text(
         _rating.comment
         ),
-        trailing: Icon(Icons.more_vert),
+        trailing: Container(
+          width: 45,
+          height: 30,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text('${_rating.rate}'),
+              Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+            ],
+          ),
+        ),
         isThreeLine: true,
     ));
   }
@@ -32,7 +45,7 @@ class ProRating extends StatelessWidget {
 
 Widget buildRatingFromSnapshot(BuildContext context,DocumentSnapshot item){
   ResponseRating rating = ResponseRating(
-        item['avatar'], item['user-name'], item['comment']);
+        item['avatar'], item['user-name'], item['comment'],item['rate']);
     return ProRating(rating);
 
 }

@@ -27,8 +27,7 @@ dependencies:
     sdk: flutter
   mvc_pattern: ^3.4.3
   flutter_screenutil: ^0.5.3
-  flutter_facebook_login:
-    git: https://github.com/lequanghiep74/flutter_facebook_login
+  flutter_facebook_login: ^3.0.0
   firebase_auth: ^0.14.0+5
   intl: ^0.16.1
   splashscreen: ^1.2.0
@@ -59,6 +58,7 @@ dependencies:
   flutter_google_places: ^0.2.6
   flutter_image_compress: ^0.7.0
   image_cropper: ^1.2.3
+  flutter_rating_bar: ^3.0.1+1
 
 
 dev_dependencies:

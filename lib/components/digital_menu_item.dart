@@ -20,9 +20,10 @@ Widget getItemDetail(CategoryItem item){
           width: 64,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Text('${item.rate}'),
                   Icon(Icons.star,color: Colors.yellowAccent,),

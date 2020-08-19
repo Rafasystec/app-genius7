@@ -56,4 +56,11 @@
         <string>osmandmaps</string>
     </array>
 </dict>
+<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSAllowsArbitraryLoadsInWebContent</key>
+        <true/>
+    </dict>
 </plist>

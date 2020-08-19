@@ -45,7 +45,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
                   version: QrVersions.auto,
                   size: 200,
                 ),
-              )
+              ),
+              SizedBox(height: 25,),
+              Text(widget.refRestaurant),
 
             ],
           ),

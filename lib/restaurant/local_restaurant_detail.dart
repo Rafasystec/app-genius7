@@ -51,7 +51,7 @@ class _LocalRestaurantDetailScreenState extends State<LocalRestaurantDetailScree
                 stream: Firestore.instance.collection(widget.restaurant.reference.path+'/reviews').snapshots(),
                 builder: (context, snapshot) {
                   if(!snapshot.hasData) return const Text('Loading...');
-                  return RatingComment(snapshot,isLogged: _isLogged,);
+                  return RatingComment(snapshot,widget.restaurant.reference.path,isLogged: _isLogged,);
                 }
             ),
           ),

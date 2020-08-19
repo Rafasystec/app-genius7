@@ -39,6 +39,7 @@
   "sign_in_success": "Logado com sucesso!",
   "sign_in_fail": "Falha ao logar.",
   "sing_in_with_google": "LOGAR COM GMAIL",
+  "sing_in_with_facebook": "LOGAR COM FACEBOOK",
   "are_you_sure_delete": "Tem certeza que deseja excluir?",
   "delete_item": "Deletar Item",
   "deleted_images": "Imagens apagadas.",

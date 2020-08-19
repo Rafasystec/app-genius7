@@ -6,6 +6,7 @@ import 'package:app/util/app_locations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -30,9 +31,9 @@ class LoginScreenState extends State<LoginScreen> {
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   SharedPreferences prefs;
-
-  bool isLoading = false;
-  bool isLoggedIn = false;
+  var facebookLogin = FacebookLogin();
+  bool isLoading    = false;
+  bool isLoggedIn   = false;
   FirebaseUser currentUser;
 
   @override
@@ -78,6 +79,9 @@ class LoginScreenState extends State<LoginScreen> {
       case FromScreen.LOGIN_PRO:
         /// TODO: Handle this case.
         break;
+       case FromScreen.JUST_CLOSE:
+         Navigator.pop(context,isLoggedIn);
+         break;
     }
   }
 
@@ -103,9 +107,15 @@ class LoginScreenState extends State<LoginScreen> {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-
+    this.setState(() {
+      isLoggedIn = true;
+    });
     FirebaseUser firebaseUser = (await firebaseAuth.signInWithCredential(credential)).user;
 
+    await setUserCredentialsAndGoToMainPage(firebaseUser);
+  }
+
+  Future setUserCredentialsAndGoToMainPage(FirebaseUser firebaseUser) async {
     if (firebaseUser != null) {
       // Check is already sign up
       final QuerySnapshot result =
@@ -136,10 +146,9 @@ class LoginScreenState extends State<LoginScreen> {
       }
       Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('sign_in_success'));
       this.setState(() {
-        isLoading = false;
+        isLoading   = false;
+        isLoggedIn  = true;
       });
-
-//      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(currentUserId: firebaseUser.uid)));
       redirectToCorrectHomeScreen();
     } else {
       Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('sign_in_fail'));
@@ -147,6 +156,39 @@ class LoginScreenState extends State<LoginScreen> {
         isLoading = false;
       });
     }
+  }
+
+    Future<Null> signInWithFacebook() async {
+      final FacebookLoginResult result =
+//      await facebookLogin.logInWithReadPermissions(['email']);
+      await facebookLogin.logIn(['email','public_profile','user_friends']);
+      if(result.status == FacebookLoginStatus.error){
+        print('Facebook login error: ${result.errorMessage}');
+        Fluttertoast.showToast(msg: 'Was not possible do the login.');
+        return;
+      }else if(result.status == FacebookLoginStatus.cancelledByUser){
+        print('Canceled by user');
+        Fluttertoast.showToast(msg: 'Canceled');
+        return;
+      }
+      final AuthCredential credential = FacebookAuthProvider.getCredential(
+        accessToken: result.accessToken.token,
+      );
+      final FirebaseUser user =
+          (await firebaseAuth.signInWithCredential(credential)).user;
+      assert(user.email != null);
+      assert(user.displayName != null);
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final FirebaseUser currentUser = await firebaseAuth.currentUser();
+      assert(user.uid == currentUser.uid);
+      if (user != null) {
+        print('Successfully signed in with Facebook. ' + user.uid);
+      } else {
+        print('Failed to sign in with Facebook. ');
+      }
+      await setUserCredentialsAndGoToMainPage(user);
   }
 
   @override
@@ -159,27 +201,48 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           centerTitle: true,
         ),
-        body: Stack(
-          children: <Widget>[
-            Center(
-              child: FlatButton(
-                  onPressed: handleSignIn,
-                  child: Text(
-                    AppLocalizations.of(context).translate('sing_in_with_google'),
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  color: Color(0xffdd4b39),
-                  highlightColor: Color(0xffff7f7f),
-                  splashColor: Colors.transparent,
-                  textColor: Colors.white,
-                  padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
-            ),
+        body: Center(
+          child: Stack(
+            children: <Widget>[
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    FlatButton(
+                        onPressed: handleSignIn,
+                        child: Text(
+                          AppLocalizations.of(context).translate('sing_in_with_google'),
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        color: Color(0xffdd4b39),
+                        highlightColor: Color(0xffff7f7f),
+                        splashColor: Colors.transparent,
+                        textColor: Colors.white,
+                        padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
+                    SizedBox(height: 25,),
+                    FlatButton(
+                        onPressed: signInWithFacebook,
+                        child: Text(
+                          AppLocalizations.of(context).translate('sing_in_with_facebook'),
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        color: Color(0xffdd4b39),
+                        highlightColor: Color(0xffff7f7f),
+                        splashColor: Colors.transparent,
+                        textColor: Colors.white,
+                        padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
 
-            // Loading
-            Positioned(
-              child: isLoading ? const Loading() : Container(),
-            ),
-          ],
+
+                  ],
+                ),
+              ),
+              // Loading
+              Positioned(
+                child: isLoading ? const Loading() : Container(),
+              ),
+            ]
+          ),
         ));
   }
 }

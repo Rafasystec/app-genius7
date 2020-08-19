@@ -4,7 +4,7 @@ class CategoryItem{
   final int id;
   final String description;
   final String shortDescription;
-  final int rate;
+  final num rate;
   final String price;
   final String iconUrl;
   final String ref;
