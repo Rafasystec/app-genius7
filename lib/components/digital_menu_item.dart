@@ -1,6 +1,7 @@
 import 'package:app/Objects/category_item.dart';
 import 'package:app/components/image_circle.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 Widget getItemDetail(CategoryItem item){
   return Container(
@@ -25,7 +26,7 @@ Widget getItemDetail(CategoryItem item){
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text('${item.rate}'),
+                  Text('${NumberFormat("###.0#").format(item.rate ?? 0) }'),
                   Icon(Icons.star,color: Colors.yellowAccent,),
                 ],
               ),

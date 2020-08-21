@@ -74,7 +74,7 @@ class _RatingCommentState extends State<RatingComment> {
             child: Visibility(
                 visible: !isLoggedIn,
                 child: appButtonTheme(context, 'LOGAR E COMENTAR', (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(FromScreen.LOGIN_CLIENT, title: 'Faça o login',))).then((value) {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(FromScreen.JUST_CLOSE, title: 'Faça o login',))).then((value) {
                     if(value == null) return;
                     if(value){
                       setState(() {
