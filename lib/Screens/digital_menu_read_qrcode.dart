@@ -1,12 +1,17 @@
 import 'package:app/Objects/digital_menu_options.dart';
 import 'package:app/Screens/digital_menu.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/enums/enum_type_area.dart';
 import 'package:app/restaurant/find_restaurants_and_menu.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+
+
 class ScreenReadQrCode extends StatefulWidget {
+  final TypeArea type;
+  ScreenReadQrCode(this.type);
   @override
   _ScreenReadQrCodeState createState() => _ScreenReadQrCodeState();
 }
@@ -33,7 +38,7 @@ class _ScreenReadQrCodeState extends State<ScreenReadQrCode> {
                 ),
                 Text('Se preferir, você pode somente pesquisar por algum estabelecimento para visualizar as opções do MENU, lembrando que você só poderá realizar pedidos depois da leitura do QR-CODE'),
                 //TODO this option will get to the screen search
-                appButtonTheme(context, 'QUERO VER OUTRAS OPÇÕES', ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchForMenusAndRestaurants()))),
+                appButtonTheme(context, 'QUERO VER OUTRAS OPÇÕES', ()=>Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchForMenusAndRestaurants(widget.type)))),
               ],
             ),
           ),
@@ -52,7 +57,7 @@ class _ScreenReadQrCodeState extends State<ScreenReadQrCode> {
           if(this.barcode.isNotEmpty) {
             var options = DigitalMenuOptions(1, 2, result.rawContent);
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ScreenDigitalMenu(options)));
+                builder: (context) => ScreenDigitalMenu(options,typeArea: widget.type,)));
           }
         }
       });

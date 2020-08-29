@@ -1,0 +1,4 @@
+enum TypeArea{
+  RESTAURANT,
+  SALES
+}

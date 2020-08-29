@@ -8,6 +8,7 @@ import 'package:app/components/dialog_with_field.dart';
 import 'package:app/components/digital_menu_item.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/components/scroll_parent.dart';
+import 'package:app/enums/enum_type_area.dart';
 import 'package:app/response/response_menu_item.dart';
 import 'package:app/restaurant/build_menu_digital.dart';
 import 'package:app/restaurant/settings.dart';
@@ -25,7 +26,8 @@ import '../const.dart';
 
 class ScreenDigitalMenu extends StatefulWidget {
   final DigitalMenuOptions options;
-  ScreenDigitalMenu(this.options);
+  final TypeArea typeArea;
+  ScreenDigitalMenu(this.options,{this.typeArea = TypeArea.RESTAURANT});
   @override
   _ScreenDigitalMenuState createState() => _ScreenDigitalMenuState();
 }
@@ -94,14 +96,13 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
             if(refRest == null || refRest.isEmpty) {
               prefs = await SharedPreferences.getInstance();
               Fluttertoast.showToast(msg: 'Você precisa configurar o ser perfil primeiro.');
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF))));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF),widget.typeArea)));
             }else {
               category = await onGetCategoryName();
               print('save category: $category');
-
               if (refRest != null && refRest.isNotEmpty) {
                 Firestore.instance.collection(
-                    'restaurants/${widget.options.refRestaurant}/menu').add({
+                    getCollection()).add({
                   'desc': category}).then((value) {
                   if (value != null) {
                     Fluttertoast.showToast(
@@ -120,7 +121,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
         ),
       ),
       body:  StreamBuilder(
-        stream: Firestore.instance.collection('restaurants/${widget.options.refRestaurant}/menu').snapshots(),
+        stream: Firestore.instance.collection(getCollection()).snapshots(),
         builder: (context, snapshot) {
           if(!snapshot.hasData) return const Text('Loading...');
           return buildListView(snapshot);
@@ -129,8 +130,16 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
     );
   }
 
-  Widget buildListView(AsyncSnapshot snapshot) {
-    return snapshot.data.documents.length > 0 ? ListView.builder(
+  String getCollection() {
+    if(widget.typeArea == TypeArea.RESTAURANT) {
+      return '$COLLECTION_RESTAURANT/${widget.options.refRestaurant}/menu';
+    }else {
+      return '$COLLECTION_STORE/${widget.options.refRestaurant}/menu';
+    }
+  }
+
+    Widget buildListView(AsyncSnapshot snapshot) {
+      return snapshot.data.documents.length > 0 ? ListView.builder(
           padding: const EdgeInsets.all(2),
           controller: _controller,
           itemCount: snapshot.data.documents.length,
@@ -142,92 +151,93 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                    Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
-                    Visibility(
-                      visible: widget.options.isEditMode,
-                      child: FlatButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(6.0),
-                          side: BorderSide(color: Colors.red),
+                      Text(item['desc'],style: TextStyle(fontSize: 20.0,fontStyle: FontStyle.italic),),
+                      Visibility(
+                        visible: widget.options.isEditMode,
+                        child: FlatButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6.0),
+                            side: BorderSide(color: Colors.red),
+                          ),
+                          onPressed: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant, item.documentID)));
+                          },
+                          child: Text(AppLocalizations.of(context).translate('add_item')),
                         ),
-                        onPressed: (){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant, item.documentID)));
-                        },
-                        child: Text(AppLocalizations.of(context).translate('add_item')),
-                      ),
-                    )
-                ]),
+                      )
+                    ]),
                 Container(
                   height: 250,
                   child: StreamBuilder(
-                    stream: item.reference.collection("itens").snapshots(),
-                    builder: (context, snapshot) {
-                      if(!snapshot.hasData) return const Text('Loading...');
-                      return (snapshot.data.documents.length > 0  ? listCategoryItem(snapshot.data.documents)
-                      : buildContainerToAddItem(context,item));
-                    }
+                      stream: item.reference.collection("itens").snapshots(),
+                      builder: (context, snapshot) {
+                        if(!snapshot.hasData) return const Text('Loading...');
+                        return (snapshot.data.documents.length > 0  ? listCategoryItem(snapshot.data.documents)
+                            : buildContainerToAddItem(context,item));
+                      }
                   ),
                 ),
               ],
             );
           }
-        ) : Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Center(child: Text('Nenhuma categoria ainda')),
-        );
-  }
+      ) : Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(child: Text('Nenhuma categoria ainda')),
+      );
+    }
 
-  Widget buildContainerToAddItem(BuildContext context, DocumentSnapshot category) {
-    return widget.options.isEditMode ? Container(
-      height: 50.0,
+    Widget buildContainerToAddItem(BuildContext context, DocumentSnapshot category) {
+      return widget.options.isEditMode ? Container(
+        height: 50.0,
         child: appButtonTheme(context,'Add the first item \n for ${category['desc']}?',(){
           Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,category.documentID)));
         },height: 50.0),
       ) : SizedBox(height: 5,);
-  }
+    }
 
-  Widget listCategoryItem(List<DocumentSnapshot> docs){
-    return ScrollParent(
-      child: ListView.builder(
-          itemCount: docs.length,
-          itemBuilder: (BuildContext context,int index){
-            DocumentSnapshot item = docs[index];
-            return GestureDetector(
-              onTap: () async{
-                if(widget.options.isEditMode){
-                  ResponseMenuItem menuItem = ResponseMenuItem(item['desc'],item['category'],item['detail'],item['price'].toDouble(),getImagesFromSnapshot(item['images']),item['id'],item['icon'],item['rate']);
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,item['category'],isEdit: true,item: menuItem,)));
-                }else {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          ScreenDigitalMenuItem(
-                              categoryItemFromSnapshot(item))));
-                }
-                //Fluttertoast.showToast(msg: 'Click');
-              },
-              child: getItemDetail(categoryItemFromSnapshot(item)),
-            );
-          }
-      ),
-      controller: _controller,
-    ) ;
-  }
+    Widget listCategoryItem(List<DocumentSnapshot> docs){
+      return ScrollParent(
+        child: ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (BuildContext context,int index){
+              DocumentSnapshot item = docs[index];
+              return GestureDetector(
+                onTap: () async{
+                  if(widget.options.isEditMode){
+                    ResponseMenuItem menuItem = ResponseMenuItem(item['desc'],item['category'],item['detail'],item['price'].toDouble(),getImagesFromSnapshot(item['images']),item['id'],item['icon'],item['rate']);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,item['category'],isEdit: true,item: menuItem,)));
+                  }else {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            ScreenDigitalMenuItem(
+                                categoryItemFromSnapshot(item))));
+                  }
+                  //Fluttertoast.showToast(msg: 'Click');
+                },
+                child: getItemDetail(categoryItemFromSnapshot(item)),
+              );
+            }
+        ),
+        controller: _controller,
+      ) ;
+    }
 
-  CategoryItem categoryItemFromSnapshot(DocumentSnapshot item) => CategoryItem(0,item['desc'],item['detail'],item['rate'],formatCurrency(item['price']),item['icon'],item.reference.path, listImagesUrl: getImagesFromSnapshot(item['images']));
+    CategoryItem categoryItemFromSnapshot(DocumentSnapshot item) => CategoryItem(0,item['desc'],item['detail'],item['rate'],formatCurrency(item['price']),item['icon'],item.reference.path, listImagesUrl: getImagesFromSnapshot(item['images']));
 
-  void onItemMenuPress(Choice choice) {
-    if (choice.id == 0) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenuMyOrders()));
+    void onItemMenuPress(Choice choice) {
+      if (choice.id == 0) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenuMyOrders()));
+      }
+    }
+
+
+
+    Future<String> onGetCategoryName() {
+      var value = openDialogField(context,title: AppLocalizations.of(context).translate('category_name'));
+      return Future.value(value);
     }
   }
 
 
 
-  Future<String> onGetCategoryName() {
-    var value = openDialogField(context,title: AppLocalizations.of(context).translate('category_name'));
-    return Future.value(value);
-  }
 
-
-
-}

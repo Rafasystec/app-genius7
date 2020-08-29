@@ -1,3 +1,4 @@
+import 'package:app/enums/enum_type_area.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,10 +11,14 @@ class PreferenceUtil{
     prefs.clear();
   }
 
-  static void setRestPreferenceFromDocument(DocumentSnapshot document) async {
+  static void setRestPreferenceFromDocument(DocumentSnapshot document, TypeArea typeArea) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(REST_EDIT_MODE, true);
-    prefs.setString(RESTAURANT_PATH, document.documentID);
+    if(typeArea == TypeArea.SALES){
+      prefs.setString(SALES_PATH, document.documentID);
+    }else {
+      prefs.setString(RESTAURANT_PATH, document.documentID);
+    }
     prefs.setBool(REST_ACTIVE   , document[FB_REST_ACTIVE]);
     prefs.setString(REST_ADDRESS, document[FB_REST_ADDRESS]);
     prefs.setString(REST_AVATAR , document[FB_REST_AVATAR]);

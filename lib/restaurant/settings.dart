@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/enums/enum_type_area.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
 import 'package:app/util/global_param.dart';
@@ -24,7 +25,8 @@ import '../const.dart';
 class ScreenSettings extends StatefulWidget {
   final String userRef;
   final bool isEdit;
-  ScreenSettings(this.userRef,{this.isEdit = false});
+  final TypeArea typeArea;
+  ScreenSettings(this.userRef,this.typeArea,{this.isEdit = false});
   @override
   _ScreenSettingsState createState() => _ScreenSettingsState();
 }
@@ -34,11 +36,12 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
   File avatarImageFile;
   String photoUrl,name, address = '';
+  String currentCollection;
   ImagePicker _picker;
   bool isLoading      = false,
        isLoggedIn     = false,
        showRemoveAll  = false;
-  String refRestaurant;
+  String refDoc;
   SharedPreferences prefs;
   TextEditingController controllerRestaurantName;
   Mode _mode = Mode.overlay;
@@ -110,8 +113,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
     if(isEditMode){
       Firestore.instance
-          .collection(COLLECTION_RESTAURANT)
-          .document(refRestaurant)
+//          .collection(COLLECTION_RESTAURANT)
+          .collection(currentCollection)
+          .document(refDoc)
       .updateData({FB_REST_NAME: name
       }).then((data) async {
         prefs.setString(REST_NAME, name);
@@ -129,7 +133,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       });
     }else {
       Firestore.instance
-          .collection(COLLECTION_RESTAURANT)
+//          .collection(COLLECTION_RESTAURANT)
+          .collection(currentCollection)
           .add({FB_REST_NAME: name,
         FB_REST_ACTIVE: true,
         FB_REST_AVATAR: photoUrl,
@@ -140,9 +145,13 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         FB_REST_ADDRESS: address,
         FB_REST_IMAGES: urls,
         FB_REST_USER: widget.userRef}).then((data) async {
-        refRestaurant = data.documentID;
-        await prefs.setString(RESTAURANT_PATH, refRestaurant);
-        PreferenceUtil.setRestPreferenceFromDocument(await data.get());
+        refDoc = data.documentID;
+        if(widget.typeArea == TypeArea.SALES){
+          await prefs.setString(SALES_PATH, refDoc);
+        }else{
+          await prefs.setString(RESTAURANT_PATH, refDoc);
+        }
+        PreferenceUtil.setRestPreferenceFromDocument(await data.get(),TypeArea.RESTAURANT);
         uploadFile();
         uploadGallery();
         setState(() {
@@ -162,7 +171,11 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
   void readLocal() async {
     prefs         = await SharedPreferences.getInstance();
-    refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+    if(widget.typeArea == TypeArea.SALES) {
+      refDoc = prefs.getString(SALES_PATH) ?? '';
+    }else {
+      refDoc = prefs.getString(RESTAURANT_PATH) ?? '';
+    }
     photoUrl      = prefs.getString(REST_AVATAR) ?? '';
     setState(() {
       var tempIsEdit = prefs.getBool(REST_EDIT_MODE);
@@ -171,7 +184,7 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       }else{
         isEditMode = false;
       }
-      if(refRestaurant.trim().isEmpty){
+      if(refDoc.trim().isEmpty){
         isLoggedIn = false;
       }else{
         isLoggedIn = true;
@@ -193,13 +206,14 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   }
 
   void deleteGallery(){
-    var refDoc = Firestore.instance
-        .collection(COLLECTION_RESTAURANT)
-        .document(refRestaurant);
-    if(refDoc != null) {
-      String ref = refDoc.documentID;
+    var refDocument = Firestore.instance
+//        .collection(COLLECTION_RESTAURANT)
+        .collection(currentCollection)
+        .document(refDoc);
+    if(refDocument != null) {
+      String ref = refDocument.documentID;
       if(ref.isNotEmpty) {
-        refDoc.updateData({FB_REST_IMAGES: FieldValue.delete()}).then((value) =>
+        refDocument.updateData({FB_REST_IMAGES: FieldValue.delete()}).then((value) =>
             Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('deleted_images')));
       }
     }
@@ -213,7 +227,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
 
   Future uploadFile() async {
     if(avatarImageFile == null)return;
-    String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/main_$refRestaurant';
+//    String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/main_$refRestaurant';
+    String fileName = '$currentCollection/$refDoc/main_$refDoc';
     StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = reference.putFile(avatarImageFile);
     StorageTaskSnapshot storageTaskSnapshot;
@@ -223,10 +238,11 @@ class _ScreenSettingsState extends State<ScreenSettings> {
         storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
           photoUrl = downloadUrl;
           Firestore.instance
-              .collection(COLLECTION_RESTAURANT)
-              .document(refRestaurant)
+//              .collection(COLLECTION_RESTAURANT)
+              .collection(currentCollection)
+              .document(refDoc)
               .updateData({FB_REST_AVATAR: photoUrl,
-                           FB_REST_ID: refRestaurant}).then((data) async {
+                           FB_REST_ID: refDoc}).then((data) async {
 //            await prefs.setString(RESTAURANT_IMG_PATH, photoUrl);
             setState(() {
               isLoading = false;
@@ -271,7 +287,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       isLoading = true;
     });
     for(File file in files ){
-      String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
+//      String fileName = '$COLLECTION_RESTAURANT/$refRestaurant/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
+      String fileName = '$currentCollection/$refDoc/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
       StorageUploadTask uploadTask = reference.putFile(file);
       StorageTaskSnapshot storageTaskSnapshot;
@@ -290,8 +307,9 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                 isLoading = true;
                 if (!hasError) {
                   Firestore.instance
-                      .collection(COLLECTION_RESTAURANT)
-                      .document(refRestaurant)
+                      .collection(currentCollection)
+//                      .collection(COLLECTION_RESTAURANT)
+                      .document(refDoc)
                       .updateData({'images': urlsFromDB}).then((data) async {
                     setState(() {
                       isLoading = false;
@@ -333,6 +351,11 @@ class _ScreenSettingsState extends State<ScreenSettings> {
   @override
   void initState() {
     super.initState();
+    if(widget.typeArea == TypeArea.SALES) {
+      currentCollection = COLLECTION_STORE;
+    }else{
+      currentCollection = COLLECTION_RESTAURANT;
+    }
     _picker = ImagePicker();
     readLocal();
 

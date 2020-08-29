@@ -51,10 +51,9 @@ class LoginScreenState extends State<LoginScreen> {
 
     isLoggedIn = await googleSignIn.isSignedIn();
     if (isLoggedIn) {
-      redirectToCorrectHomeScreen();
+      redirectToCorrectHomeScreen(prefs.get(USER_REF));
       //Closes this login page
       Navigator.pop(context);
-
     }
 
     this.setState(() {
@@ -62,7 +61,7 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void redirectToCorrectHomeScreen() {
+  void redirectToCorrectHomeScreen(String userId) {
      switch(widget.fromScreen){
       case FromScreen.LOGIN_CLIENT:
         Navigator.pushReplacement(
@@ -80,7 +79,7 @@ class LoginScreenState extends State<LoginScreen> {
         /// TODO: Handle this case.
         break;
        case FromScreen.JUST_CLOSE:
-         Navigator.pop(context,isLoggedIn);
+         Navigator.pop(context,userId);
          break;
     }
   }
@@ -149,7 +148,7 @@ class LoginScreenState extends State<LoginScreen> {
         isLoading   = false;
         isLoggedIn  = true;
       });
-      redirectToCorrectHomeScreen();
+      redirectToCorrectHomeScreen(firebaseUser.uid);
     } else {
       Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('sign_in_fail'));
       this.setState(() {

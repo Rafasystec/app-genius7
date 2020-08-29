@@ -23,12 +23,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
-class HomeScreenRestaurant extends StatefulWidget {
+class HomeScreenStore extends StatefulWidget {
   @override
-  _HomeScreenRestaurantState createState() => _HomeScreenRestaurantState();
+  _HomeScreenStoreState createState() => _HomeScreenStoreState();
 }
 
-class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
+class _HomeScreenStoreState extends State<HomeScreenStore> {
   SharedPreferences prefs;
   String userId;
   String restaurantDoc;
@@ -41,31 +41,31 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
   @override
   void initState() {
     readLocal();
-    getEstablishmentsFromThatUser();
+//    getEstablishmentsFromThatUser();
     super.initState();
   }
 
-  Future getEstablishmentsFromThatUser() async {
-    //------------------------------------------------------------
-    //NOTE: we need to check if the user has one restaurant or more
-    //------------------------------------------------------------
-    prefs = await SharedPreferences.getInstance();
-    bool hasMore = prefs.getBool(HAS_MORE_ESTABLISHMENTS) == null ? false : prefs.getBool(HAS_MORE_ESTABLISHMENTS);
-    if(!hasMore) {
-      var address = prefs.getString(REST_ADDRESS);
-      if( address == null || address.isEmpty) {
-        final QuerySnapshot result = await Firestore.instance.collection(
-            COLLECTION_RESTAURANT).where(
-            'user-ref', isEqualTo: prefs.getString(USER_REF)).getDocuments();
-        final List<DocumentSnapshot> documents = result.documents;
-        if (documents.length == 1) {
-          PreferenceUtil.setRestPreferenceFromDocument(documents[0],TypeArea.RESTAURANT);
-        } else if (documents.length > 1) {
-          prefs.setBool(HAS_MORE_ESTABLISHMENTS, true);
-        }
-      }
-    }
-  }
+//  Future getEstablishmentsFromThatUser() async {
+//    //------------------------------------------------------------
+//    //NOTE: we need to check if the user has one restaurant or more
+//    //------------------------------------------------------------
+//    prefs = await SharedPreferences.getInstance();
+//    bool hasMore = prefs.getBool(HAS_MORE_ESTABLISHMENTS) == null ? false : prefs.getBool(HAS_MORE_ESTABLISHMENTS);
+//    if(!hasMore) {
+//      var address = prefs.getString(REST_ADDRESS);
+//      if( address == null || address.isEmpty) {
+//        final QuerySnapshot result = await Firestore.instance.collection(
+//            COLLECTION_RESTAURANT).where(
+//            'user-ref', isEqualTo: prefs.getString(USER_REF)).getDocuments();
+//        final List<DocumentSnapshot> documents = result.documents;
+//        if (documents.length == 1) {
+//          PreferenceUtil.setRestPreferenceFromDocument(documents[0],TypeArea.RESTAURANT);
+//        } else if (documents.length > 1) {
+//          prefs.setBool(HAS_MORE_ESTABLISHMENTS, true);
+//        }
+//      }
+//    }
+//  }
 
   void readLocal() async {
     prefs = await SharedPreferences.getInstance();

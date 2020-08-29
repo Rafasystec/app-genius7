@@ -1,19 +1,17 @@
 import 'dart:io';
 
-import 'package:app/Screens/digital_menu.dart';
 import 'package:app/Screens/digital_menu_read_qrcode.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/enums/enum_type_area.dart';
 import 'package:app/enums/from_screen_enum.dart';
-import 'package:app/home.dart';
 import 'package:app/login.dart';
 import 'package:app/restaurant/home.dart';
 import 'package:app/restaurant/settings.dart';
+import 'package:app/sales/choice_account.dart';
 import 'package:app/settings.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -139,7 +137,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
 //          SizedBox(height: 10,),
 //          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
 //          SizedBox(height: 10,),
-            appButtonTheme(context, 'MENU DIGITAL', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode()))),
+            appButtonTheme(context, AppLocalizations.of(context).translate('digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode(TypeArea.RESTAURANT)))),
             SizedBox(height: 10,),
             Container(
                 padding: EdgeInsets.all(8.0),
@@ -157,6 +155,10 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
                 }
               }
             ),
+            SizedBox(height: 10,),
+            appButtonTheme(context, AppLocalizations.of(context).translate('products'), (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SalesChoiceAccountScreen()));
+            })
           ],
         )
     );
@@ -169,7 +171,7 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
             builder: (context) => HomeScreenRestaurant()));
       }else{
         Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ScreenSettings(refUser))).then((value){
+            builder: (context) => ScreenSettings(refUser,TypeArea.RESTAURANT))).then((value){
           if(refRestaurant != null && refRestaurant.isNotEmpty) {
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => HomeScreenRestaurant()));

@@ -76,7 +76,8 @@ class _RatingCommentState extends State<RatingComment> {
                 child: appButtonTheme(context, 'LOGAR E COMENTAR', (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen(FromScreen.JUST_CLOSE, title: 'Faça o login',))).then((value) {
                     if(value == null) return;
-                    if(value){
+                    String userId = value as String;
+                    if(userId.isNotEmpty){
                       setState(() {
                         isLoggedIn = true;
                       });

@@ -13,11 +13,13 @@ const String NICK_NAME            = "nickname";
 const String PHOTO_URL            = "photoUrl";
 const String ABOUT_ME             = 'aboutMe';
 const String RESTAURANT_PATH      = 'restaurant-doc-path';
+const String SALES_PATH           = 'sales-doc-path';
 const String USER_REF             = 'user-ref';
 const String RESTAURANT_IMG_PATH  = 'rest-photo-url';
 
 //Constants for collections on Firebase
-const String COLLECTION_RESTAURANT= 'restaurants';
+const String COLLECTION_RESTAURANT  = 'restaurants';
+const String COLLECTION_STORE       = 'stores';
 
 //------------------------------------------
 //To use in shared preferences
