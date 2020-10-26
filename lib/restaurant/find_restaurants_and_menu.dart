@@ -44,7 +44,7 @@ class _SearchForMenusAndRestaurantsState extends State<SearchForMenusAndRestaura
                 DocumentSnapshot item = snapshot.data.documents[index];
                   return GestureDetector(
                     onTap: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LocalRestaurantDetailScreen(item)));
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => LocalRestaurantDetailScreen(item,widget.type)));
                     },
                       child: getItemLocalRestaurantDetail(item)
                   );

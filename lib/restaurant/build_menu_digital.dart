@@ -4,6 +4,7 @@ import 'package:app/components/dialog.dart';
 import 'package:app/components/gallery_example_item.dart';
 import 'package:app/components/gallery_view.dart';
 import 'package:app/components/screen_util.dart';
+import 'package:app/enums/enum_type_area.dart';
 import 'package:app/response/response_menu_item.dart';
 import 'package:app/util/app_locations.dart';
 import 'package:app/util/file_util.dart';
@@ -24,7 +25,8 @@ class BuildDigitalMenuScreen extends StatefulWidget {
   final String refRestaurant,refCategory;
   final bool isEdit;
   final ResponseMenuItem item;
-  BuildDigitalMenuScreen(this.refRestaurant,this.refCategory,{this.isEdit = false,this.item});
+  final TypeArea typeArea;
+  BuildDigitalMenuScreen(this.refRestaurant,this.refCategory,this.typeArea, {this.isEdit = false,this.item});
   @override
   _BuildDigitalMenuScreenState createState() => _BuildDigitalMenuScreenState();
 }
@@ -47,6 +49,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
   List<GalleryItem> _galleryItems  = new List();
   GalleryItem _mainImageItem;
   String refItem;
+  String collection;
 
 
   List<GalleryItem> loadImagesFromStorage(List<String>urls){
@@ -73,6 +76,11 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     }
     _picker = ImagePicker();
     print('Description: ${edtDescriptionController.text}');
+    if(widget.typeArea == TypeArea.RESTAURANT){
+      collection = COLLECTION_RESTAURANT;
+    }else{
+      collection = COLLECTION_STORE;
+    }
     super.initState();
   }
   ///When we need to get image
@@ -138,7 +146,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                                   appButtonTheme(context, AppLocalizations.of(context).translate('add_image'), ()=>addImageGalleryOrCamera(false,null,0),height: 25,),
                                   GalleryView(_galleryItems),
                                   appButtonTheme(context, AppLocalizations.of(context).translate('add_images'), ()=>addImageGalleryOrCamera(false,_galleryItems,5),height: 30,),
-                                  formFieldText(AppLocalizations.of(context).translate('meal_name'), (value) {return null;},onChanged: (value){
+                                  formFieldText( widget.typeArea == TypeArea.RESTAURANT ? AppLocalizations.of(context).translate('meal_name') : AppLocalizations.of(context).translate('product_name'), (value) {return null;},onChanged: (value){
                                     description = value;
                                   },controller: edtDescriptionController,
                                       maxLength: 25),
@@ -148,7 +156,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                                       keyboardType: TextInputType.multiline,
                                       maxLength: 80
                                   ),
-                                  formFieldText('Valor Ex: 55.40',(value) {return null;},onChanged: (value){
+                                  formFieldText(AppLocalizations.of(context).translate('example_value'),(value) {return null;},onChanged: (value){
                                     if(value != null && value.isNotEmpty) {
                                       price = double.parse(value);
                                     }
@@ -169,7 +177,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                                   (){Future.sync(() => onDelete()).then((value){
                                     if(value) {
                                       Firestore.instance
-                                          .collection('restaurants/${widget
+                                          .collection('$collection/${widget
                                           .refRestaurant}/menu/${widget
                                           .refCategory}/itens').document(
                                           widget.item.id).delete().then((
@@ -289,7 +297,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     if(widget.isEdit){
       refItem = widget.item.id;
       Firestore.instance
-          .collection('restaurants/${widget.refRestaurant}/menu/${widget
+          .collection('$collection/${widget.refRestaurant}/menu/${widget
           .refCategory}/itens').document(widget.item.id).updateData({
                       'desc'  : edtDescriptionController.text,
                       'detail': edtDetailController.text,
@@ -304,7 +312,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     }else {
       print('Description: ${edtDescriptionController.toString()}');
       Firestore.instance
-          .collection('restaurants/${widget.refRestaurant}/menu/${widget
+          .collection('$collection/${widget.refRestaurant}/menu/${widget
           .refCategory}/itens')
           .add({
         'desc': description,
@@ -332,7 +340,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
 
   Future uploadFile() async {
     if(avatarImageFile == null)return;
-    String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/main.jpg';
+    String fileName = '$collection/${widget.refRestaurant}/menu/$refItem/main.jpg';
     StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
     StorageUploadTask uploadTask = reference.putFile(avatarImageFile);
     StorageTaskSnapshot storageTaskSnapshot;
@@ -342,7 +350,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
         storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
           photoUrl = downloadUrl;
           Firestore.instance
-              .collection('$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
+              .collection('$collection/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
               .document(refItem)
               .updateData({'icon': photoUrl,
             'id': refItem}).then((data) async {
@@ -383,7 +391,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
     int index = 0;
 //    Fluttertoast.showToast(msg: 'Uploading files ...');
     for(File file in files ){
-      String fileName = '$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/$refItem/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
+      String fileName = '$collection/${widget.refRestaurant}/menu/$refItem/${++index}_${DateFormat('ddMMyyyyHHmmss').format(DateTime.now())}.jpg';
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
       StorageUploadTask uploadTask = reference.putFile(file);
       StorageTaskSnapshot storageTaskSnapshot;
@@ -402,7 +410,7 @@ class _BuildDigitalMenuScreenState extends State<BuildDigitalMenuScreen> {
                 isLoading = false;
                 if (!hasError) {
                   Firestore.instance
-                      .collection('$COLLECTION_RESTAURANT/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
+                      .collection('$collection/${widget.refRestaurant}/menu/${widget.refCategory}/itens')
                       .document(refItem)
                       .updateData({'images': urlsFromDB}).then((data) async {
                     setState(() {

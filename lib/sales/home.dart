@@ -31,7 +31,7 @@ class HomeScreenStore extends StatefulWidget {
 class _HomeScreenStoreState extends State<HomeScreenStore> {
   SharedPreferences prefs;
   String userId;
-  String restaurantDoc;
+  String salesDoc;
   List<Choice> choices = const <Choice>[
     const Choice(0, title: 'Perfil', icon: Icons.settings),
     const Choice(1, title: 'Log out', icon: Icons.exit_to_app),
@@ -41,42 +41,20 @@ class _HomeScreenStoreState extends State<HomeScreenStore> {
   @override
   void initState() {
     readLocal();
-//    getEstablishmentsFromThatUser();
     super.initState();
   }
 
-//  Future getEstablishmentsFromThatUser() async {
-//    //------------------------------------------------------------
-//    //NOTE: we need to check if the user has one restaurant or more
-//    //------------------------------------------------------------
-//    prefs = await SharedPreferences.getInstance();
-//    bool hasMore = prefs.getBool(HAS_MORE_ESTABLISHMENTS) == null ? false : prefs.getBool(HAS_MORE_ESTABLISHMENTS);
-//    if(!hasMore) {
-//      var address = prefs.getString(REST_ADDRESS);
-//      if( address == null || address.isEmpty) {
-//        final QuerySnapshot result = await Firestore.instance.collection(
-//            COLLECTION_RESTAURANT).where(
-//            'user-ref', isEqualTo: prefs.getString(USER_REF)).getDocuments();
-//        final List<DocumentSnapshot> documents = result.documents;
-//        if (documents.length == 1) {
-//          PreferenceUtil.setRestPreferenceFromDocument(documents[0],TypeArea.RESTAURANT);
-//        } else if (documents.length > 1) {
-//          prefs.setBool(HAS_MORE_ESTABLISHMENTS, true);
-//        }
-//      }
-//    }
-//  }
-
   void readLocal() async {
-    prefs = await SharedPreferences.getInstance();
-    userId = prefs.getString(USER_REF);
-    restaurantDoc = prefs.getString(RESTAURANT_PATH);
+    prefs     = await SharedPreferences.getInstance();
+    userId    = prefs.getString(USER_REF);
+    salesDoc  = prefs.getString(SALES_PATH);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate('restaurant')),
+        title: Text(AppLocalizations.of(context).translate('store')),
         actions: <Widget>[
           PopupMenuButton<Choice>(
             onSelected: onItemMenuPress,
@@ -115,19 +93,17 @@ class _HomeScreenStoreState extends State<HomeScreenStore> {
                   child: Text(AppLocalizations.of(context).translate('see_my_menu_digital_explain')),
                 ),
               ),
-              appButtonTheme(context, AppLocalizations.of(context).translate('my_digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
-                1,0,restaurantDoc
+              appButtonTheme(context, AppLocalizations.of(context).translate('see_catalog'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
+                1,0,salesDoc,TypeArea.SALES
               ))))),
               SizedBox(height: 10,),
-              appButtonTheme(context, 'EDITAR MENU DIGITAL', (){
+              appButtonTheme(context, AppLocalizations.of(context).translate('my_catalog'), (){
                 Future.sync(() => seeDigitalMenu());
               }),
               SizedBox(height: 10,),
-              appButtonTheme(context, 'GERAR QR-CODE', () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => QRCodeScreen(restaurantDoc)));
+              appButtonTheme(context, AppLocalizations.of(context).translate('generate_QRCODE'), () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => QRCodeScreen(salesDoc)));
               }),
-              SizedBox(height: 10,),
-              Visibility(visible: false, child: appButtonTheme(context, 'SOU GARÇOM', ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => WaiterMainScreen()))))
             ],
           ),
         ),
@@ -142,10 +118,10 @@ class _HomeScreenStoreState extends State<HomeScreenStore> {
 //    }else{
 //        Restaurant restaurant = await getRestaurantFromFirebase(restaurantDoc);
 //        Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(restaurant)));
-        if(restaurantDoc == null || restaurantDoc.isEmpty){
-            restaurantDoc = prefs.getString(RESTAURANT_PATH);
+        if(salesDoc == null || salesDoc.isEmpty){
+            salesDoc = prefs.getString(SALES_PATH);
         }
-        var options = DigitalMenuOptions(1, 2,restaurantDoc,isEditMode: true);
+        var options = DigitalMenuOptions(1, 2,salesDoc,TypeArea.SALES, isEditMode: true);
         Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ScreenDigitalMenu(options)));
 //      }

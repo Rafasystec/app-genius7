@@ -100,6 +100,11 @@ class _ScreenSettingsState extends State<ScreenSettings> {
          isLoading = false;
        });
      }
+    }else{
+      //NOTE: User gave up
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -380,7 +385,13 @@ class _ScreenSettingsState extends State<ScreenSettings> {
       }
     }
     if(name == null || name.isEmpty){
-      Fluttertoast.showToast(msg: AppLocalizations.of(context).translate('inform_the_restaurant_name'));
+      if(widget.typeArea == TypeArea.RESTAURANT) {
+        Fluttertoast.showToast(msg: AppLocalizations.of(context).translate(
+            'inform_the_restaurant_name'));
+      }else{
+        Fluttertoast.showToast(msg: AppLocalizations.of(context).translate(
+            'inform_the_store_name'));
+      }
       result = false;
     }
     return result;
@@ -450,7 +461,8 @@ class _ScreenSettingsState extends State<ScreenSettings> {
                 getMainPhotoContainer(avatarImageFile,photoUrl,()=>addImageGalleryOrCamera(false,null,0)),
                 formField(context, controllerRestaurantName, (value){
                     name = value;
-                }, AppLocalizations.of(context).translate('restaurant_name'), null),
+                }, widget.typeArea == TypeArea.RESTAURANT ? AppLocalizations.of(context).translate('restaurant_name') : AppLocalizations.of(context).translate('store_name'),
+                    null),
 //                SizedBox(height: 20.0,),
 //                appButtonTheme(context,'SAVE',handleSaveData),
                 SizedBox(height: 20.0,),

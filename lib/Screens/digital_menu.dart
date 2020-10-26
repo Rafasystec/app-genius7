@@ -26,8 +26,9 @@ import '../const.dart';
 
 class ScreenDigitalMenu extends StatefulWidget {
   final DigitalMenuOptions options;
-  final TypeArea typeArea;
-  ScreenDigitalMenu(this.options,{this.typeArea = TypeArea.RESTAURANT});
+  //final TypeArea typeArea;
+//  ScreenDigitalMenu(this.options,{this.typeArea = TypeArea.RESTAURANT});
+  ScreenDigitalMenu(this.options);
   @override
   _ScreenDigitalMenuState createState() => _ScreenDigitalMenuState();
 }
@@ -56,7 +57,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MENU'),
+        title:  Text( widget.options.typeArea == TypeArea.RESTAURANT ? AppLocalizations.of(context).translate('menu') : AppLocalizations.of(context).translate('catalog')),
         actions: <Widget>[
           Visibility(
 //            visible: !widget.options.isEditMode,
@@ -96,7 +97,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
             if(refRest == null || refRest.isEmpty) {
               prefs = await SharedPreferences.getInstance();
               Fluttertoast.showToast(msg: 'Você precisa configurar o ser perfil primeiro.');
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF),widget.typeArea)));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenSettings(prefs.getString(USER_REF),widget.options.typeArea)));
             }else {
               category = await onGetCategoryName();
               print('save category: $category');
@@ -131,7 +132,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
   }
 
   String getCollection() {
-    if(widget.typeArea == TypeArea.RESTAURANT) {
+    if(widget.options.typeArea == TypeArea.RESTAURANT) {
       return '$COLLECTION_RESTAURANT/${widget.options.refRestaurant}/menu';
     }else {
       return '$COLLECTION_STORE/${widget.options.refRestaurant}/menu';
@@ -160,7 +161,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
                             side: BorderSide(color: Colors.red),
                           ),
                           onPressed: (){
-                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant, item.documentID)));
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant, item.documentID,widget.options.typeArea)));
                           },
                           child: Text(AppLocalizations.of(context).translate('add_item')),
                         ),
@@ -190,7 +191,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
       return widget.options.isEditMode ? Container(
         height: 50.0,
         child: appButtonTheme(context,'Add the first item \n for ${category['desc']}?',(){
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,category.documentID)));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,category.documentID,widget.options.typeArea)));
         },height: 50.0),
       ) : SizedBox(height: 5,);
     }
@@ -205,7 +206,7 @@ class _ScreenDigitalMenuState extends State<ScreenDigitalMenu> {
                 onTap: () async{
                   if(widget.options.isEditMode){
                     ResponseMenuItem menuItem = ResponseMenuItem(item['desc'],item['category'],item['detail'],item['price'].toDouble(),getImagesFromSnapshot(item['images']),item['id'],item['icon'],item['rate']);
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,item['category'],isEdit: true,item: menuItem,)));
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuildDigitalMenuScreen(widget.options.refRestaurant,item['category'],widget.options.typeArea , isEdit: true,item: menuItem,)));
                   }else {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>

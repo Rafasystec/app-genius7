@@ -116,7 +116,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
                 ),
               ),
               appButtonTheme(context, AppLocalizations.of(context).translate('my_digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenDigitalMenu(DigitalMenuOptions(
-                1,0,restaurantDoc
+                1,0,restaurantDoc,TypeArea.RESTAURANT
               ))))),
               SizedBox(height: 10,),
               appButtonTheme(context, 'EDITAR MENU DIGITAL', (){
@@ -145,7 +145,7 @@ class _HomeScreenRestaurantState extends State<HomeScreenRestaurant> {
         if(restaurantDoc == null || restaurantDoc.isEmpty){
             restaurantDoc = prefs.getString(RESTAURANT_PATH);
         }
-        var options = DigitalMenuOptions(1, 2,restaurantDoc,isEditMode: true);
+        var options = DigitalMenuOptions(1, 2,restaurantDoc,TypeArea.RESTAURANT, isEditMode: true);
         Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => ScreenDigitalMenu(options)));
 //      }
