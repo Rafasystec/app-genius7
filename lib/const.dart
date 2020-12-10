@@ -20,6 +20,8 @@ const String RESTAURANT_IMG_PATH  = 'rest-photo-url';
 //Constants for collections on Firebase
 const String COLLECTION_RESTAURANT  = 'restaurants';
 const String COLLECTION_STORE       = 'stores';
+const String COLLECTION_AGENDA      = 'agenda';
+const String COLLECTION_PRO         = 'pro';
 
 //------------------------------------------
 //To use in shared preferences

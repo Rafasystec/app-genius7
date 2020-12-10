@@ -15,14 +15,14 @@ class ScreenGroupAreas extends StatelessWidget {
     List<ResponseGroupList> list = new List();
     list.add(ResponseGroupList(1,'https://blogdaliga.com.br/wp-content/uploads/2019/08/alvenaria.jpg','ALVENARIA'));
     list.add(ResponseGroupList(2,'https://img.stpu.com.br/?img=https://s3.amazonaws.com/pu-mgr/default/a0R0f00001Fdh3JEAR/5d8e1f15e4b09720b65d1d2f.jpg&w=710&h=462','ESTÉTICA'));
-    list.add(ResponseGroupList(2,'https://conteudo.imguol.com.br/c/entretenimento/85/2020/03/10/produtos-de-limpeza-1583862507502_v2_1254x837.jpg','CUIDADOS DO LAR'));
-    list.add(ResponseGroupList(2,'https://www.quadrilatero.ind.br/cache/images/85-pt-br-1170x520.jpg','MARCENARIA'));
-    list.add(ResponseGroupList(2,'https://novovarejo.com.br/wp-content/uploads/2020/02/qual-autopeca-mais-vendida-1170x694.jpg','AUTO-PEÇAS'));
-    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
-    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
-    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
-    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
-    list.add(ResponseGroupList(2,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(3,'https://conteudo.imguol.com.br/c/entretenimento/85/2020/03/10/produtos-de-limpeza-1583862507502_v2_1254x837.jpg','CUIDADOS DO LAR'));
+    list.add(ResponseGroupList(4,'https://www.quadrilatero.ind.br/cache/images/85-pt-br-1170x520.jpg','MARCENARIA'));
+    list.add(ResponseGroupList(5,'https://novovarejo.com.br/wp-content/uploads/2020/02/qual-autopeca-mais-vendida-1170x694.jpg','AUTO-PEÇAS'));
+    list.add(ResponseGroupList(6,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(7,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(8,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(9,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
+    list.add(ResponseGroupList(10,'https://omecanico.com.br/wp-content/uploads/2020/01/oficina-m%C3%B3vel_1.jpg','OFICINAS'));
     return list;
   }
 
@@ -32,15 +32,6 @@ class ScreenGroupAreas extends StatelessWidget {
       Scaffold(
         appBar: AppBar(
           title: Text('Escolha um grupo'),
-//          actions: <Widget>[
-//            IconButton(
-//              icon: Icon(
-//                Icons.exit_to_app,
-//                color: Colors.white,
-//              ),
-//              onPressed: () => Navigator.pop(context),
-//            ),
-//          ],
         ),
         body: FutureBuilder<List<ResponseGroupList>>(
           future: Future.delayed(Duration(seconds: 1)).then((value) => _is() ) ,

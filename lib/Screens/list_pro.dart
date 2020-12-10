@@ -1,9 +1,14 @@
 import 'package:app/Screens/pro_detail_and_agenda.dart';
 import 'package:app/components/centered_message.dart';
+import 'package:app/components/empty_message.dart';
 import 'package:app/components/prod_detail.dart';
 import 'package:app/components/progress_bar.dart';
+import 'package:app/const.dart';
+import 'package:app/response/response_address.dart';
 import 'package:app/response/response_pro.dart';
+import 'package:app/util/app_locations.dart';
 import 'package:app/webservice/pro_ws.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,46 +22,52 @@ class ListPro extends StatelessWidget{
       appBar: AppBar(
         title: Text('Lista de Profissionais'),
       ),
-      body: FutureBuilder<List<ResponsePro>>(
-        future: Future.delayed(Duration(seconds: 1)).then((value) => getAllProfessionalByArea(idAreaPro)),
-        builder: (context,snapshot){
-          switch(snapshot.connectionState) {
-            case ConnectionState.none:
-              break;
-            case ConnectionState.waiting:
-              return ProgressBar();
-              break;
-            case ConnectionState.active:
-              break;
-            case ConnectionState.done:
-              if(snapshot.hasData) {
-                final List<ResponsePro> pros = snapshot.data;
-                if (pros.isNotEmpty) {
-                  return ListProfessionals(pros);
-                }
-              }else if(snapshot.hasError){
-                return CenteredMessage('Sorry! We got an error',icon: Icons.error,);
+      body: WillPopScope(
+        child: Container(
+          child: StreamBuilder(
+            stream: Firestore.instance.collection(COLLECTION_PRO).where('id-area',isEqualTo: idAreaPro).snapshots(),
+            builder: (context,snapshot){
+              if(!snapshot.hasData) return Center(
+                  child:CircularProgressIndicator()
+              );
+              if(snapshot.hasData && snapshot.data.documents.length > 0) {
+                return ListProfessionals(snapshot.data);
+              }if(snapshot.hasError){
+                return Center(
+                  child: Text(
+                      'Error occurred'
+                  ),
+                );
+              }else {
+                return EmptyMessage(AppLocalizations.of(context).translate('no_pro_found'));
               }
-              break;
-          }
-          return CenteredMessage('No entry found!',icon: Icons.warning,);
-        },
+            },
+          ),
+        ),  
       ),
     );
   }
+
+
 }
 
 class ListProfessionals extends StatelessWidget{
-  final List<ResponsePro> list;
-  ListProfessionals(this.list);
+  final QuerySnapshot _snapshot;
+  ListProfessionals(this._snapshot);
   @override
   Widget build(BuildContext context) {
     return new ListView.builder(
-        itemCount: list == null ? 0 : list.length,
+        itemCount: _snapshot.documents.length,
         itemBuilder: (BuildContext context, int index){
-          var item = list[index];
-          return GetList(item);
+          DocumentSnapshot item = _snapshot.documents[index];
+          return GetList(snapshotToResponse(item));
         });
+  }
+  ResponsePro snapshotToResponse(DocumentSnapshot doc){
+    if(doc != null){
+      return ResponsePro(0,doc['name'],doc['rate'],doc['photo'],doc['about'],doc['num_att'],doc['amount-rate'],null,doc['user-ref'],
+          address : ResponseAddress(doc['district'],doc['street']));
+    }else return null;
   }
 }
 

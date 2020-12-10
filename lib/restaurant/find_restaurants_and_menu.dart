@@ -4,6 +4,7 @@ import 'package:app/enums/enum_type_area.dart';
 import 'package:app/response/response_local_restaurant.dart';
 import 'package:app/response/response_rating.dart';
 import 'package:app/restaurant/local_restaurant_detail.dart';
+import 'package:app/util/app_locations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 ///This will be use to products too.
@@ -30,17 +31,15 @@ class _SearchForMenusAndRestaurantsState extends State<SearchForMenusAndRestaura
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Pesquisa'),),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).translate('search')),),
       body: Container(
         child: StreamBuilder(
-//          stream: Firestore.instance.collection('restaurants').snapshots(),
           stream: Firestore.instance.collection(currentCollection).snapshots(),
           builder: (context, snapshot) {
-            if(!snapshot.hasData) return const Text('Loading...');
+            if(!snapshot.hasData) return Text(AppLocalizations.of(context).translate('loading_bar'));
             return ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (BuildContext context, int index){
-//                  var item = restaurants[index];
                 DocumentSnapshot item = snapshot.data.documents[index];
                   return GestureDetector(
                     onTap: (){

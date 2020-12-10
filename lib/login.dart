@@ -66,7 +66,7 @@ class LoginScreenState extends State<LoginScreen> {
       case FromScreen.LOGIN_CLIENT:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen(currentUserId: prefs.getString(USER_REF))),
+          MaterialPageRoute(builder: (context) => HomeScreenCostumerService(currentUserId: "prefs.getString(USER_REF)")),
         );
         break;
       case FromScreen.LOGIN_RESTAURANT:

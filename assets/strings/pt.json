@@ -69,5 +69,12 @@
   "see_my_menu_digital_explain": "Esta primeira opção mostra como o seu MENU aparecerá para os clientes.",
   "are_you_a_restaurant": "Caso você seja dono de restaurante e quer participar do sistema , escolha a opção abaixo para se cadastrar e montar o seu menu.",
   "explain_delete_image": "Na versão gratuita não é permitido excluir uma imagem especifica ou troca-la. Para isso você deve excluir todas as fotas e inseri-las novamente.",
-  "free_cant_del_each_file": "Na versão gratuita não é possível excluir uma única imagem e colocar outra, é necessário a exclusão de todos os itens."
+  "free_cant_del_each_file": "Na versão gratuita não é possível excluir uma única imagem e colocar outra, é necessário a exclusão de todos os itens.",
+  "are_you_costumer": "Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:",
+  "service_provider": "Prestador de Serviço",
+  "i_want_a_service": "Quero um serviço",
+  "home_screen": "Início",
+  "search": "Pesquisa",
+  "loading_bar": "Carregando...",
+  "no_pro_found": "Desculpe! Nenhum profissional encontrado."
 }

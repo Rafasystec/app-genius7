@@ -69,5 +69,12 @@
   "inform_the_item_description": "Please enter the description of the item.",
   "are_you_a_restaurant": "If you are a restaurant owner and want to participate in the system, choose the option below to register and set up your menu.",
   "explain_delete_image": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items.",
-  "free_cant_del_each_file": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items."
+  "free_cant_del_each_file": "In the free version it is not possible to delete a single image and place another one, it is necessary to delete all items.",
+  "are_you_costumer": "Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:",
+  "service_provider": "Service Provider",
+  "i_want_a_service": "I want a service",
+  "home_screen": "Home",
+  "search": "Search",
+  "loading_bar": "Loading...",
+  "no_pro_found": "No professional found. Sorry!"
 }

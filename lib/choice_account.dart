@@ -4,6 +4,7 @@ import 'package:app/Screens/digital_menu_read_qrcode.dart';
 import 'package:app/components/screen_util.dart';
 import 'package:app/enums/enum_type_area.dart';
 import 'package:app/enums/from_screen_enum.dart';
+import 'package:app/home.dart';
 import 'package:app/login.dart';
 import 'package:app/restaurant/home.dart';
 import 'package:app/restaurant/settings.dart';
@@ -13,6 +14,7 @@ import 'package:app/util/app_locations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/choice.dart';
@@ -132,16 +134,18 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
           children: [
             Container(
                 padding: EdgeInsets.all(8.0),
-                child: Text('Se você for um cliente e deseja ver o Menu de opções do local Selecione a opção abaixo:')),
-//          appButtonTheme(context, 'SOU CLIENTE', ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()))),
-//          SizedBox(height: 10,),
-//          appButtonTheme(context, 'SOU PROFISSIONAL', ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
-//          SizedBox(height: 10,),
+                child: Text(AppLocalizations.of(context).translate('are_you_costumer'))),
+          appButtonTheme(context, AppLocalizations.of(context).translate('i_want_a_service'),
+                  ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreenCostumerService(currentUserId: '2512',)))),
+
+          SizedBox(height: 10,),
             appButtonTheme(context, AppLocalizations.of(context).translate('digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode(TypeArea.RESTAURANT)))),
             SizedBox(height: 10,),
             Container(
                 padding: EdgeInsets.all(8.0),
                 child: Text(AppLocalizations.of(context).translate('are_you_a_restaurant'))),
+            SizedBox(height: 10,),
+            appButtonTheme(context, AppLocalizations.of(context).translate('service_provider'), ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
             SizedBox(height: 10,),
             appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () async {
                 prefs         = await SharedPreferences.getInstance();
