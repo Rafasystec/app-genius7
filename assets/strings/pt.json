@@ -76,5 +76,10 @@
   "home_screen": "Início",
   "search": "Pesquisa",
   "loading_bar": "Carregando...",
-  "no_pro_found": "Desculpe! Nenhum profissional encontrado."
+  "no_pro_found": "Desculpe! Nenhum profissional encontrado.",
+  "error_on_load_data": "Ops! Erro ao tentar carregar os dados. Tente novamente mais tarde.",
+  "click_on_agenda_message": "Você ainda não possui nenhuma agenda, para agendar um serviço primeiro procure pelo o profissional clicando no ícone de calendário",
+  "or_click_here" : " ou clique nessa mensagem.",
+  "see_pro_agenda" : "Ver a agenda do profissional",
+  "see_agenda" : "Ver agenda"
 }

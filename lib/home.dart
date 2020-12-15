@@ -31,6 +31,7 @@ class HomeScreenCostumerService extends StatefulWidget {
 class HomeScreenState extends State<HomeScreenCostumerService> {
   HomeScreenState({Key key, @required this.currentUserId});
 
+
   final String currentUserId;
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -49,6 +50,7 @@ class HomeScreenState extends State<HomeScreenCostumerService> {
     super.initState();
     registerNotification();
     configLocalNotification();
+
   }
 
   void registerNotification() {
@@ -114,6 +116,7 @@ class HomeScreenState extends State<HomeScreenCostumerService> {
 
   @override
   Widget build(BuildContext context) {
+    final String homeLabel = AppLocalizations.of(context).translate('key');
     Future<Null> handleSignOut() async {
       this.setState(() {
         isLoading = true;
@@ -191,13 +194,13 @@ class HomeScreenState extends State<HomeScreenCostumerService> {
               }if(snapshot.hasError){
                 return Center(
                   child: Text(
-                      'Error occurred'
+                      AppLocalizations.of(context).translate('error_on_load_data')
                   ),
                 );
               }else {
                 return EmptyMessage(
-                    'Você ainda não possui nenhuma agenda, para agendar um serviço primeiro procure pelo o profissional clicando no ícone de calendário'
-                ,spanMessage: ' ou clique nessa mensagem.',onPressed: (){goToGroupAreas(context);});
+                    AppLocalizations.of(context).translate('click_on_agenda_message')
+                ,spanMessage: AppLocalizations.of(context).translate('or_click_here'),onPressed: (){goToGroupAreas(context);});
               }
             },
           ),
