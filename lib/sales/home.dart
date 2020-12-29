@@ -11,6 +11,7 @@ import 'package:app/components/screen_util.dart';
 import 'package:app/const.dart';
 import 'package:app/enums/enum_type_area.dart';
 import 'package:app/main.dart';
+import 'package:app/main/main_widget.dart';
 import 'package:app/restaurant/qrcode_screen.dart';
 import 'package:app/restaurant/settings.dart';
 import 'package:app/restaurant/waiter_home.dart';

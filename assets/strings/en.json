@@ -80,6 +80,6 @@
   "error_on_load_data": "Sorry! Error on loading data. Try again later.",
   "click_on_agenda_message": "You do not have any agenda yet, to schedule a service first look for the professional by clicking on the calendar icon.",
   "or_click_here" : " or click on this message.",
-  "see_pro_agenda" : "See the pro agenda."
+  "see_pro_agenda" : "See the pro agenda.",
   "see_agenda" : "See agenda."
 }

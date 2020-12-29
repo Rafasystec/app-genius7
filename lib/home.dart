@@ -16,7 +16,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'Screens/cli_agenda_detail.dart';
 import 'components/choice.dart';
 import 'const.dart';
-import 'main.dart';
+import 'main/main_widget.dart';
 import 'settings.dart';
 
 class HomeScreenCostumerService extends StatefulWidget {
@@ -139,6 +139,34 @@ class HomeScreenState extends State<HomeScreenCostumerService> {
       }
     }
 
+    Widget getMainContent(){
+      return Container(
+        child: StreamBuilder(
+          stream: Firestore.instance.collection(COLLECTION_AGENDA).where('user-ref', isEqualTo: widget.currentUserId).snapshots(),
+          builder: (context,snapshot){
+            if(!snapshot.hasData) return Center(
+                child:CircularProgressIndicator()
+            );
+            if(snapshot.hasData && snapshot.data.documents.length > 0) {
+              return getListViewBuild(snapshot);
+            }if(snapshot.hasError){
+              return Center(
+                child: Text(
+                    AppLocalizations.of(context).translate('error_on_load_data')
+                ),
+              );
+            }else {
+              return EmptyMessage(
+                  AppLocalizations.of(context).translate('click_on_agenda_message')
+                  ,spanMessage: AppLocalizations.of(context).translate('or_click_here'),onPressed: (){goToGroupAreas(context);});
+            }
+          },
+        ),
+      );
+    }
+
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -182,29 +210,7 @@ class HomeScreenState extends State<HomeScreenCostumerService> {
         backgroundColor: Color(0xfff5a623),
       ),
       body: WillPopScope(
-        child: Container(
-          child: StreamBuilder(
-            stream: Firestore.instance.collection(COLLECTION_AGENDA).where('user-ref', isEqualTo: widget.currentUserId).snapshots(),
-            builder: (context,snapshot){
-              if(!snapshot.hasData) return Center(
-                      child:CircularProgressIndicator()
-                  );
-              if(snapshot.hasData && snapshot.data.documents.length > 0) {
-                return getListViewBuild(snapshot);
-              }if(snapshot.hasError){
-                return Center(
-                  child: Text(
-                      AppLocalizations.of(context).translate('error_on_load_data')
-                  ),
-                );
-              }else {
-                return EmptyMessage(
-                    AppLocalizations.of(context).translate('click_on_agenda_message')
-                ,spanMessage: AppLocalizations.of(context).translate('or_click_here'),onPressed: (){goToGroupAreas(context);});
-              }
-            },
-          ),
-        ),
+        child: getMainContent(),
         //onWillPop: onBackPress,
       ),
       bottomNavigationBar: BottomNavigationBar(

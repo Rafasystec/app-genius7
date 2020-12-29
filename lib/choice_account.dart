@@ -21,6 +21,7 @@ import 'components/choice.dart';
 import 'main.dart';
 
 import 'const.dart';
+import 'main/main_widget.dart';
 
 class ChooseTypeAccount extends StatefulWidget {
   @override
@@ -132,37 +133,116 @@ class _ChooseTypeAccountState extends State<ChooseTypeAccount> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-                padding: EdgeInsets.all(8.0),
-                child: Text(AppLocalizations.of(context).translate('are_you_costumer'))),
-          appButtonTheme(context, AppLocalizations.of(context).translate('i_want_a_service'),
-                  ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreenCostumerService(currentUserId: '2512',)))),
-
-          SizedBox(height: 10,),
-            appButtonTheme(context, AppLocalizations.of(context).translate('digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode(TypeArea.RESTAURANT)))),
-            SizedBox(height: 10,),
-            Container(
-                padding: EdgeInsets.all(8.0),
-                child: Text(AppLocalizations.of(context).translate('are_you_a_restaurant'))),
-            SizedBox(height: 10,),
-            appButtonTheme(context, AppLocalizations.of(context).translate('service_provider'), ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
-            SizedBox(height: 10,),
-            appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () async {
-                prefs         = await SharedPreferences.getInstance();
-                refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
-                refUser       = prefs.getString(USER_REF) ?? '';
-                if(refUser == null || refUser.isEmpty){
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => LoginScreen(FromScreen.LOGIN_RESTAURANT)));
-                }else {
-                  restaurantIsRegister(context);
-                }
-              }
+            Card(
+              child: ListTile(
+                leading: Image.asset(
+                  'images/home/exchange_work.png',
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(AppLocalizations.of(context).translate('i_want_a_service')),
+                subtitle: Text(
+                    'Aqui você pode encontrar o prestador de serviço que resolva o seu problema'
+                ),
+                trailing: Icon(Icons.chevron_right),
+                isThreeLine: true,
+                onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreenCostumerService(currentUserId: '2512',))),
+              ),
             ),
-            SizedBox(height: 10,),
-            appButtonTheme(context, AppLocalizations.of(context).translate('products'), (){
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SalesChoiceAccountScreen()));
-            })
+            Card(
+              child: ListTile(
+                leading: Image.asset(
+                  'images/home/menu.png',
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(AppLocalizations.of(context).translate('digital_menu')),
+                subtitle: Text(
+                    'Escolhar um restaurante e veja o que ele tem a oferecer ou peça o ler o QR-Code.'
+                ),
+                trailing: Icon(Icons.chevron_right),
+                isThreeLine: true,
+                onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode(TypeArea.RESTAURANT))),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: Image.asset(
+                  'images/home/restaurant.png',
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(AppLocalizations.of(context).translate('restaurant')),
+                subtitle: Text(
+                    'Se você é dono de restaurante então esncolha essa opção.'
+                ),
+                trailing: Icon(Icons.chevron_right),
+                isThreeLine: true,
+                onTap: () async {
+                  prefs         = await SharedPreferences.getInstance();
+                  refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+                  refUser       = prefs.getString(USER_REF) ?? '';
+                  if(refUser == null || refUser.isEmpty){
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => LoginScreen(FromScreen.LOGIN_RESTAURANT)));
+                  }else {
+                    restaurantIsRegister(context);
+                  }
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                leading: Image.asset(
+                  'images/home/construction_worker.png',
+                  width: 50.0,
+                  height: 50.0,
+                  fit: BoxFit.cover,
+                ),
+                title: Text(AppLocalizations.of(context).translate('service_provider')),
+                subtitle: Text(
+                    'Tem um talento e deseja oforecer para outras pessoas? Então essa é a sua opção.'
+                ),
+                trailing: Icon(Icons.chevron_right),
+                isThreeLine: true,
+                onTap: ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!'),
+              ),
+            ),
+
+//            Container(
+//                padding: EdgeInsets.all(8.0),
+//                child: Text(AppLocalizations.of(context).translate('are_you_costumer'))),
+//            appButtonTheme(context, AppLocalizations.of(context).translate('i_want_a_service'),
+//                  ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreenCostumerService(currentUserId: '2512',)))),
+//
+//            SizedBox(height: 10,),
+//            appButtonTheme(context, AppLocalizations.of(context).translate('digital_menu'), ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context) => ScreenReadQrCode(TypeArea.RESTAURANT)))),
+//            SizedBox(height: 10,),
+//            Container(
+//                padding: EdgeInsets.all(8.0),
+//                child: Text(AppLocalizations.of(context).translate('are_you_a_restaurant'))),
+//            SizedBox(height: 10,),
+//            appButtonTheme(context, AppLocalizations.of(context).translate('service_provider'), ()=>Fluttertoast.showToast(msg: 'Ainda não implementado!')),
+//            SizedBox(height: 10,),
+//            appButtonTheme(context, AppLocalizations.of(context).translate('restaurant'), () async {
+//                prefs         = await SharedPreferences.getInstance();
+//                refRestaurant = prefs.getString(RESTAURANT_PATH) ?? '';
+//                refUser       = prefs.getString(USER_REF) ?? '';
+//                if(refUser == null || refUser.isEmpty){
+//                  Navigator.of(context).push(MaterialPageRoute(
+//                      builder: (context) => LoginScreen(FromScreen.LOGIN_RESTAURANT)));
+//                }else {
+//                  restaurantIsRegister(context);
+//                }
+//              }
+//            ),
+//            SizedBox(height: 10,),
+//            appButtonTheme(context, AppLocalizations.of(context).translate('products'), (){
+//              Navigator.of(context).push(MaterialPageRoute(builder: (context) => SalesChoiceAccountScreen()));
+//            })
           ],
         )
     );

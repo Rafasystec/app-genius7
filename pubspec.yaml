@@ -59,9 +59,13 @@ dependencies:
   flutter_image_compress: ^0.7.0
   image_cropper: ^1.2.3
   flutter_rating_bar: 3.0.1+1
+  flutter_modular:
+  mobx:
+  flutter_mobx:
 
 
 dev_dependencies:
+  mobx_codegen:
   flutter_test:
     sdk: flutter
   build_runner: ^1.5.16
@@ -91,6 +95,10 @@ flutter:
        - images/mimi7.gif
        - images/mimi8.gif
        - images/mimi9.gif
+       - images/home/construction_worker.png
+       - images/home/menu.png
+       - images/home/restaurant.png
+       - images/home/exchange_work.png
        - assets/small-image.jpg
        - assets/strings/en.json
        - assets/strings/pt.json
